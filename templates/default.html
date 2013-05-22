@@ -1,0 +1,36 @@
+<style>
+.post{background: #DDDDDD; margin-bottom: 20px;}
+p{background: #EEEEEE;}
+</style>
+
+{% if not Index_page %}
+
+	<h1>{{ Section }}</h1>
+	page: {{ Page }}
+
+	<h2>{{ Title }}</h2>
+	{{ Contents }}
+	Date: {{ Date }}, author: {{ Author }}, tags: {{ Tags }}, ID: {{ ID }}
+
+{% endif %}
+
+{% if Index_page %}
+
+	{% for page in Dictionary|sort(True) %}
+	<div class="post">
+    	{{ Dictionary[page].ID }}: <a href="{{ Dictionary[page].Slug }}">{{ Dictionary[page].Title }}</a>
+
+    		{{ Dictionary[page].Contents }}
+
+    	Written by {{ Dictionary[page].Author }} on {{ Dictionary[page].Date }}, tags: {{ Dictionary[page].Tags }}
+    </div>
+    {% endfor %}
+
+    {% if previous_page_url %}
+    <br><br><a href="{{ previous_page_url }}">PREVIOUS</a>
+    {% endif %}
+    {% if next_page_url %}
+    <br><br><a href="{{ next_page_url }}">NEXT PAGE</a>
+    {% endif %}
+
+{% endif %}
