@@ -27,6 +27,11 @@ default_template = default.html
 # default: ./output e.g.: /home/www/my_site 
 output_directory = ./output
 
+# always regenerate everything:
+# if you want to regenerate every file when running generator,
+# uncomment line below
+# regenerate_everything = True
+
 # example section's configuration:
 # [section_name]
 # template = template_name.html
@@ -66,6 +71,9 @@ output_directory = ./output
         else:
             return False
 
+    def get_output_directory(self):
+        return Settings().get_value('main', 'output_directory')
+
     def get_template(self, section):
         try:
             template = self.get_value(section, 'template')
@@ -81,6 +89,13 @@ output_directory = ./output
         except:
             return False
 
+    def check_regen_policy(self):
+        try:
+            if self.get_value('main', 'regenerate_everything') == 'True':
+                return True
+        except:
+            return False
+
 class Generator:
 
     def __init__(self):
@@ -90,11 +105,28 @@ class Generator:
         for section in self.sections:
             section_pages = self._get_sections_pages(section)
             template = Settings().get_template(section)
+
             for page in section_pages:
                 page_slug = self.get_slug(page)
                 parsed_contents = self.parse_file(page, self._get_file_contents(page, section))
+
+                # If file has other type than markdown
                 if parsed_contents == False:
                     continue
+
+                # If there is only one file in section, generate
+                # there only one index file without page directory
+                if len(section_pages) == 1:
+                    page_slug = '.'
+
+                output_directory = Settings().get_output_directory()
+
+                # If not specified, generated are only those files
+                # which have no previous generations
+                if not Settings().check_regen_policy():
+                    if self.check_if_page_exists(section, page_slug):
+                        print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
+                        continue
 
                 parsed_metadata = parsed_contents['metadata']
                 parsed_contents = parsed_contents['contents']
@@ -109,14 +141,12 @@ class Generator:
                 context['Author'] = parsed_metadata.get('Author', '')
                 context['Tags'] = parsed_metadata.get('Tags', '')
                 context['ID'] = parsed_metadata.get('ID', '')
+                context['Menu'] = self.sections
 
+                # Generate template
                 contents = self._generate_static_html(template, **context)
 
-                # If there is only one page in section, generate it in
-                # root section directory
-                if len(section_pages) == 1:
-                    page_slug = '.'
-
+                # and save it to file
                 self._save_static_html(section, page_slug, contents)
 
     def _get_sections_pages(self, section):
@@ -157,11 +187,18 @@ class Generator:
         ascending = Settings().check_if_ascending(section)
         count_dict = len(dictionary)
 
+        # This loop is used for split list of all section's
+        # contents to pages
         while(i < count_dict):
             page_slug = str(i+1) + '-' + str(i+per_page)
 
             buffer_dict = {}
 
+            # If there exists key called ascending in config,
+            # pages on index page will be generated from
+            # oldest to newest. In that case remember to change
+            # in your template line with for loop to:
+            # {% for page in Dictionary|sort %}
             if ascending:
                 for j in dictionary:
                     if j > i and j <= i + per_page:
@@ -174,6 +211,7 @@ class Generator:
             context = {}
             context['Index_page'] = True
             context['Dictionary'] = buffer_dict
+            context['Menu'] = self.sections
 
             if i < count_dict - per_page:
                 context['next_page_url'] = '../' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
@@ -183,20 +221,25 @@ class Generator:
             contents = self._generate_static_html(template, **context)
             self._save_static_html(section, page_slug, contents)
 
-            if Settings().get_default_section(section) == section:
-                if i == 0:
+            # If section was marked as default in config file
+            # its index page will be generated in top of other
+            # sections. To make urls compatibile with the rest
+            # of files, there is need to modify the dictionary
+            if i == 0:
 
-                    for j in buffer_dict:
-                        page_slug_single = str(buffer_dict[j]['Slug']).split('../')[1]
-                        buffer_dict[j]['Slug'] = page_slug_single
+                for j in buffer_dict:
+                    page_slug_single = str(buffer_dict[j]['Slug']).split('../')[1]
+                    buffer_dict[j]['Slug'] = page_slug_single
 
-                    context['next_page_url'] = str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
-                    contents = self._generate_static_html(template, **context)
+                context['next_page_url'] = str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
+                contents = self._generate_static_html(template, **context)
+                self._save_static_html(section, '.', contents)
+
+                if Settings().get_default_section(section) == section:
 
                     for j in buffer_dict:
                         buffer_dict[j]['Slug'] = section + '/' + page_slug_single
 
-                    self._save_static_html(section, '.', contents)
                     context['next_page_url'] = section + '/' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
                     contents = self._generate_static_html(template, **context)
                     self._save_static_html(section, '..', contents)
@@ -204,7 +247,7 @@ class Generator:
             i += per_page
 
     def clean_output_directory(self):
-        output_directory = Settings().get_value('main', 'output_directory')
+        output_directory = Settings().get_output_directory()
         shutil.rmtree(output_directory)
 
     def get_slug(self, filename):
@@ -236,10 +279,19 @@ class Generator:
             os.makedirs(directory)
 
     def _save_static_html(self, section, page, contents):
-        output_directory = Settings().get_value('main', 'output_directory')
+        output_directory = Settings().get_output_directory()
         self.create_directory(output_directory+'/'+section+'/'+page)
-        with open(output_directory+'/'+section+'/'+page+'/index.html', 'w+') as html_file:
-            html_file.write(contents)
+        try:
+            with open(output_directory+'/'+section+'/'+page+'/index.html', 'w+') as html_file:
+                html_file.write(contents)
+            print output_directory+'/'+section+'/'+page+'/index.html' + '\033[92m OK\033[0m'
+        except EnvironmentError:
+            print output_directory+'/'+section+'/'+page+'/index.html' + '\033[91m ERROR\033[0m'
 
     def get_all_sections(self):
         return os.walk('input').next()[1]
+
+    def check_if_page_exists(self, section, page):
+        output_directory = Settings().get_output_directory()
+        if os.path.isfile(output_directory+'/'+section+'/'+page+'/index.html'):
+            return True
