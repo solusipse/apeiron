@@ -143,11 +143,17 @@ class Generator:
                 context['ID'] = parsed_metadata.get('ID', '')
                 context['Menu'] = self.sections
 
+                if page_slug == '.':
+                    context['Page'] = section
+
                 # Generate template
                 contents = self._generate_static_html(template, **context)
 
                 # and save it to file
                 self._save_static_html(section, page_slug, contents)
+
+                if len(section_pages) == 1 and Settings().get_default_section(section) == section:
+                    self._save_static_html(section, '..', contents)
 
     def _get_sections_pages(self, section):
         return os.walk('input/'+section).next()[2]
@@ -231,7 +237,8 @@ class Generator:
                     page_slug_single = str(buffer_dict[j]['Slug']).split('../')[1]
                     buffer_dict[j]['Slug'] = page_slug_single
 
-                context['next_page_url'] = str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
+                if i < count_dict - per_page:
+                    context['next_page_url'] = str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
                 contents = self._generate_static_html(template, **context)
                 self._save_static_html(section, '.', contents)
 
@@ -240,7 +247,8 @@ class Generator:
                     for j in buffer_dict:
                         buffer_dict[j]['Slug'] = section + '/' + page_slug_single
 
-                    context['next_page_url'] = section + '/' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
+                    if i < count_dict - per_page:
+                        context['next_page_url'] = section + '/' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
                     contents = self._generate_static_html(template, **context)
                     self._save_static_html(section, '..', contents)
 
