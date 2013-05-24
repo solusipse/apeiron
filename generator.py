@@ -160,7 +160,6 @@ class Generator:
                 parsed_contents = parsed_contents['contents']
 
                 # Highlight syntax
-                #parsed_contents = Syntax().highlight(parsed_contents)
                 parsed_contents = Syntax().highlight(parsed_contents)
 
                 # Arguments for template generator
@@ -207,6 +206,9 @@ class Generator:
                     if parsed_contents == False:
                         continue
 
+                    # Highlight syntax
+                    parsed_contents['contents'] = Syntax().highlight(parsed_contents['contents'])
+
                     page_slug = self.get_slug(page)
                     page_id = int(parsed_contents['metadata'].get('ID'))
                     contents = parsed_contents['contents']
@@ -251,6 +253,7 @@ class Generator:
             context['Index_page'] = True
             context['Dictionary'] = buffer_dict
             context['Menu'] = self.sections
+            context['SyntaxCSS'] = HtmlFormatter().get_style_defs('.highlight')
 
             if i < count_dict - per_page:
                 context['next_page_url'] = '../' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
