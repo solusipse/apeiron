@@ -1,12 +1,10 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import os, shutil, markdown, time, ConfigParser
+import os, shutil, markdown, time, ConfigParser, HTMLParser
 
 # Pygments imports
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
-
-import HTMLParser
 
 env = Environment(loader=FileSystemLoader('templates'))
 
@@ -33,6 +31,12 @@ default_template = default.html
 # remember not to add slash at the end of key
 # default: ./output e.g.: /home/www/my_site 
 output_directory = ./output
+
+# static_directory:
+# this is directory where you can put all your static files:
+# images, csses, javascripts, relative link to that directory
+# will be provided on all pages - {{ Static }}
+static_directory = ./static
 
 # always regenerate everything:
 # if you want to regenerate every file when running generator,
@@ -81,6 +85,9 @@ output_directory = ./output
     def get_output_directory(self):
         return Settings().get_value('main', 'output_directory')
 
+    def get_static_directory(self):
+        return Settings().get_value('main', 'static_directory')
+
     def get_template(self, section):
         try:
             template = self.get_value(section, 'template')
@@ -102,6 +109,7 @@ output_directory = ./output
                 return True
         except:
             return False
+
 
 class Syntax(HTMLParser.HTMLParser):
 
@@ -128,9 +136,8 @@ class Syntax(HTMLParser.HTMLParser):
                 output_html = highlight(data, lexer, HtmlFormatter())
                 self.inputhtml = self.inputhtml.replace(data, output_html)
             except:
-                pass
+                print 'Could not highlight syntax!'
 
-            
 
 class Generator:
 
