@@ -1,6 +1,14 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import os, shutil, markdown, time, ConfigParser
 
+# Pygments imports
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+# testing
+import HTMLParser
+
 env = Environment(loader=FileSystemLoader('templates'))
 
 class Settings:
@@ -96,6 +104,45 @@ output_directory = ./output
         except:
             return False
 
+class Syntax(HTMLParser.HTMLParser):
+
+    def highlight(self, html):
+        self.tag_stack = []
+        self.inputhtml = html
+        self.feed(html)
+
+        return self.inputhtml
+
+    def handle_starttag(self, tag, attrs):
+        self.tag_stack.append(tag.lower())
+
+    def handle_endtag(self, tag):
+        self.tag_stack.pop()
+
+    def handle_data(self, data):
+        if len(self.tag_stack) and self.tag_stack[-1] == 'code':
+            output_html = highlight(data, PythonLexer(), HtmlFormatter())
+            self.inputhtml = self.inputhtml.replace(data, output_html)
+
+    def highlasdight(self, contents):
+        pass
+
+        '''
+        if contents.find('<code>') != -1:
+            try:
+                code = (contents.split('<pre>')[1]).split('</pre>')[0]
+                code = (code.split('<code>')[1]).split('</code>')[0]
+
+                result = highlight(code, PythonLexer(), HtmlFormatter())
+
+                contents = contents.replace(code, result)
+
+                return contents
+
+            except IndexError:
+                pass
+            return contents'''
+
 class Generator:
 
     def __init__(self):
@@ -131,6 +178,10 @@ class Generator:
                 parsed_metadata = parsed_contents['metadata']
                 parsed_contents = parsed_contents['contents']
 
+                # Highlight syntax
+                #parsed_contents = Syntax().highlight(parsed_contents)
+                parsed_contents = Syntax().highlight(parsed_contents)
+
                 # Arguments for template generator
                 context = {}
                 context['Section'] = section
@@ -142,6 +193,7 @@ class Generator:
                 context['Tags'] = parsed_metadata.get('Tags', '')
                 context['ID'] = parsed_metadata.get('ID', '')
                 context['Menu'] = self.sections
+                context['SyntaxCSS'] = HtmlFormatter().get_style_defs('.highlight')
 
                 if page_slug == '.':
                     context['Page'] = section
