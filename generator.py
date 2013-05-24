@@ -124,25 +124,6 @@ class Syntax(HTMLParser.HTMLParser):
             output_html = highlight(data, PythonLexer(), HtmlFormatter())
             self.inputhtml = self.inputhtml.replace(data, output_html)
 
-    def highlasdight(self, contents):
-        pass
-
-        '''
-        if contents.find('<code>') != -1:
-            try:
-                code = (contents.split('<pre>')[1]).split('</pre>')[0]
-                code = (code.split('<code>')[1]).split('</code>')[0]
-
-                result = highlight(code, PythonLexer(), HtmlFormatter())
-
-                contents = contents.replace(code, result)
-
-                return contents
-
-            except IndexError:
-                pass
-            return contents'''
-
 class Generator:
 
     def __init__(self):
