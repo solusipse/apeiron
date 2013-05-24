@@ -3,10 +3,9 @@ import os, shutil, markdown, time, ConfigParser
 
 # Pygments imports
 from pygments import highlight
-from pygments.lexers import PythonLexer
+from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
-# testing
 import HTMLParser
 
 env = Environment(loader=FileSystemLoader('templates'))
@@ -114,6 +113,9 @@ class Syntax(HTMLParser.HTMLParser):
         return self.inputhtml
 
     def handle_starttag(self, tag, attrs):
+        if tag == 'code' and len(attrs):
+            self.language = attrs[0][1]
+
         self.tag_stack.append(tag.lower())
 
     def handle_endtag(self, tag):
@@ -121,8 +123,14 @@ class Syntax(HTMLParser.HTMLParser):
 
     def handle_data(self, data):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
-            output_html = highlight(data, PythonLexer(), HtmlFormatter())
-            self.inputhtml = self.inputhtml.replace(data, output_html)
+            try:
+                lexer = get_lexer_by_name(self.language, stripall=True)
+                output_html = highlight(data, lexer, HtmlFormatter())
+                self.inputhtml = self.inputhtml.replace(data, output_html)
+            except:
+                pass
+
+            
 
 class Generator:
 
