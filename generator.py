@@ -205,7 +205,10 @@ class Generator:
                 parsed_contents = Syntax().highlight(parsed_contents)
 
                 # Add static url
-                parsed_contents = Manager().parse_url(parsed_contents, 0)
+                if len(section_pages) == 1:
+                    parsed_contents = Manager().parse_url(parsed_contents, 1)
+                else:
+                    parsed_contents = Manager().parse_url(parsed_contents, 0)
 
                 # Arguments for template generator
                 context = {}
