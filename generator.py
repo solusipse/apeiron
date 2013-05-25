@@ -139,10 +139,29 @@ class Syntax(HTMLParser.HTMLParser):
                 print 'Could not highlight syntax!'
 
 
+class Manager:
+
+    def create_directory(self, directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+    def set_static_directory(self):
+        static_directory = Settings().get_static_directory()
+        output_directory = Settings().get_output_directory()
+        self.create_directory(output_directory + '/' + static_directory)
+
+    def parse_url(self, data, source):
+        static_directory = Settings().get_static_directory()
+        if source == 0:
+            return data.replace('{{ Static }}', '../../' + static_directory)
+        else:
+            return data.replace('{{ Static }}', '../' + static_directory)
+
 class Generator:
 
     def __init__(self):
         self.sections = self.get_all_sections()
+        Manager().set_static_directory()
 
     def generate_pages(self):
         for section in self.sections:
@@ -176,6 +195,9 @@ class Generator:
 
                 # Highlight syntax
                 parsed_contents = Syntax().highlight(parsed_contents)
+
+                # Add static url
+                parsed_contents = Manager().parse_url(parsed_contents, 0)
 
                 # Arguments for template generator
                 context = {}
@@ -223,6 +245,9 @@ class Generator:
 
                     # Highlight syntax
                     parsed_contents['contents'] = Syntax().highlight(parsed_contents['contents'])
+
+                    # Add static url
+                    parsed_contents['contents'] = Manager().parse_url(parsed_contents['contents'], 1)
 
                     page_slug = self.get_slug(page)
                     page_id = int(parsed_contents['metadata'].get('ID'))
@@ -333,13 +358,9 @@ class Generator:
         template = env.get_template(template)
         return template.render(context)
 
-    def create_directory(self, directory):
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
     def _save_static_html(self, section, page, contents):
         output_directory = Settings().get_output_directory()
-        self.create_directory(output_directory+'/'+section+'/'+page)
+        Manager().create_directory(output_directory+'/'+section+'/'+page)
         try:
             with open(output_directory+'/'+section+'/'+page+'/index.html', 'w+') as html_file:
                 html_file.write(contents)
