@@ -157,6 +157,14 @@ class Manager:
         else:
             return data.replace('{{ Static }}', '../' + static_directory)
 
+    def get_sections_pages(self, section):
+        filelist = os.walk('input/'+section).next()[2]
+        for f in filelist:
+            if not '.md' in f:
+                filelist.remove(f)
+
+        return filelist
+
 class Generator:
 
     def __init__(self):
@@ -165,7 +173,7 @@ class Generator:
 
     def generate_pages(self):
         for section in self.sections:
-            section_pages = self._get_sections_pages(section)
+            section_pages = Manager().get_sections_pages(section)
             template = Settings().get_template(section)
 
             for page in section_pages:
@@ -224,9 +232,6 @@ class Generator:
                 if len(section_pages) == 1 and Settings().get_default_section(section) == section:
                     self._save_static_html(section, '..', contents)
 
-    def _get_sections_pages(self, section):
-        return os.walk('input/'+section).next()[2]
-
     def _get_file_contents(self, filename, section):
         with open('input/' + section + '/' + filename, 'r') as input_file:
             return input_file.read()
@@ -235,7 +240,7 @@ class Generator:
         index_dict = {}
 
         for section in self.sections:
-            section_pages = self._get_sections_pages(section)
+            section_pages = Manager().get_sections_pages(section)
 
             if len(section_pages) > 1:
                 for page in section_pages:
