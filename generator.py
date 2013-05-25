@@ -165,11 +165,27 @@ class Manager:
 
         return filelist
 
+    def get_file_contents(self, filename, section):
+        with open('input/' + section + '/' + filename, 'r') as input_file:
+            return input_file.read()
+
+    def clean_output_directory(self):
+        output_directory = Settings().get_output_directory()
+        shutil.rmtree(output_directory)
+
+    def get_syntax_css_url(self, source):
+        static_directory = Settings().get_static_directory()
+        if source == 0:
+            return '../../' + static_directory + '/Syntax.css'
+        else:
+            return '../' + static_directory + '/Syntax.css'
+
 class Generator:
 
     def __init__(self):
         self.sections = self.get_all_sections()
         Manager().set_static_directory()
+        self.generate_syntax_css()
 
     def generate_pages(self):
         for section in self.sections:
@@ -178,7 +194,7 @@ class Generator:
 
             for page in section_pages:
                 page_slug = self.get_slug(page)
-                parsed_contents = self.parse_file(page, self._get_file_contents(page, section))
+                parsed_contents = self.parse_file(page, Manager().get_file_contents(page, section))
 
                 # If file has other type than markdown
                 if parsed_contents == False:
@@ -221,7 +237,7 @@ class Generator:
                 context['Tags'] = parsed_metadata.get('Tags', '')
                 context['ID'] = parsed_metadata.get('ID', '')
                 context['Menu'] = self.sections
-                context['SyntaxCSS'] = HtmlFormatter().get_style_defs('.highlight')
+                context['SyntaxCSS'] = Manager().get_syntax_css_url(0)
 
                 if page_slug == '.':
                     context['Page'] = section
@@ -235,10 +251,6 @@ class Generator:
                 if len(section_pages) == 1 and Settings().get_default_section(section) == section:
                     self._save_static_html(section, '..', contents)
 
-    def _get_file_contents(self, filename, section):
-        with open('input/' + section + '/' + filename, 'r') as input_file:
-            return input_file.read()
-
     def generate_index_pages(self):
         index_dict = {}
 
@@ -247,7 +259,7 @@ class Generator:
 
             if len(section_pages) > 1:
                 for page in section_pages:
-                    parsed_contents = self.parse_file(page, self._get_file_contents(page, section))
+                    parsed_contents = self.parse_file(page, Manager().get_file_contents(page, section))
                     if parsed_contents == False:
                         continue
 
@@ -301,7 +313,7 @@ class Generator:
             context['Index_page'] = True
             context['Dictionary'] = buffer_dict
             context['Menu'] = self.sections
-            context['SyntaxCSS'] = HtmlFormatter().get_style_defs('.highlight')
+            context['SyntaxCSS'] = Manager().get_syntax_css_url(1)
 
             if i < count_dict - per_page:
                 context['next_page_url'] = '../' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
@@ -338,15 +350,8 @@ class Generator:
 
             i += per_page
 
-    def clean_output_directory(self):
-        output_directory = Settings().get_output_directory()
-        shutil.rmtree(output_directory)
-
     def get_slug(self, filename):
         return os.path.splitext(filename)[0]
-
-    def get_modification_date(self, filename, section):
-        return time.ctime(os.path.getctime('input/' + section + '/' + filename))
 
     def parse_file(self, filename, contents):
         filetype = os.path.splitext(filename)[1]
@@ -358,6 +363,14 @@ class Generator:
             return {'contents': contents, 'metadata': metadata}
         else:
             return False
+
+    def generate_syntax_css(self):
+        css_code = HtmlFormatter().get_style_defs('.highlight')
+        output_directory = Settings().get_output_directory()
+        static_directory = Settings().get_static_directory()
+        if not os.path.isfile(output_directory + '/' + static_directory + '/Syntax.css'):
+            with open(output_directory + '/' + static_directory + '/Syntax.css', 'w+') as css_file:
+                css_file.write(css_code)
 
     def parse_markdown(self, contents):
         return markdown.markdown(contents, extras=["metadata"])
