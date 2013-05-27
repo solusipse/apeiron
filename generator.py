@@ -1,5 +1,5 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import os, shutil, markdown, time, ConfigParser, HTMLParser
+import os, shutil, markdown, time, ConfigParser, HTMLParser, hashlib
 
 # Pygments imports
 from pygments import highlight
@@ -63,7 +63,7 @@ static_directory = ./static
 
 '''
 
-        for section in Generator().get_all_sections():
+        for section in Manager().get_all_sections():
             config += '['+section+'] \n'
             config += 'per_page = 5 \n\n'
 
@@ -71,7 +71,7 @@ static_directory = ./static
             configfile.write(config)
 
     def get_value(self, section, value):
-        parser=ConfigParser.SafeConfigParser()
+        parser = ConfigParser.SafeConfigParser()
         parser.read(['settings.cfg'])
         return parser.get(section, value)
 
@@ -154,8 +154,7 @@ class Manager:
         static_directory = Settings().get_static_directory()
         if source == 0:
             return data.replace('{{ Static }}', '../../' + static_directory)
-        else:
-            return data.replace('{{ Static }}', '../' + static_directory)
+        return data.replace('{{ Static }}', '../' + static_directory)
 
     def get_sections_pages(self, section):
         filelist = os.walk('input/'+section).next()[2]
@@ -177,13 +176,31 @@ class Manager:
         static_directory = Settings().get_static_directory()
         if source == 0:
             return '../../' + static_directory + '/Syntax.css'
-        else:
-            return '../' + static_directory + '/Syntax.css'
+        return '../' + static_directory + '/Syntax.css'
+
+    def get_all_sections(self):
+        return os.walk('input').next()[1]
+
+    def get_slug(self, filename):
+        return os.path.splitext(filename)[0]
+
+    def get_file_hash(self, section, page):
+        return hashlib.md5(self.get_file_contents(page, section)).hexdigest()
+
+    def get_saved_hash(self, section, page):
+        if not os.path.isfile('input/' + section + '/' + '.' + page + '.md5'):
+            return False
+        with open('input/' + section + '/' + '.' + page + '.md5', 'r') as input_file:
+            return input_file.read()
+
+    def save_file_hash(self, section, page, hash_info):
+        with open('input/' + section + '/' + '.' + page + '.md5', 'w+') as input_file:
+            input_file.write(hash_info)
 
 class Generator:
 
     def __init__(self):
-        self.sections = self.get_all_sections()
+        self.sections = Manager().get_all_sections()
         Manager().set_static_directory()
         self.generate_syntax_css()
 
@@ -193,10 +210,11 @@ class Generator:
             template = Settings().get_template(section)
 
             for page in section_pages:
-                page_slug = self.get_slug(page)
+                page_slug = Manager().get_slug(page)
+
                 parsed_contents = self.parse_file(page, Manager().get_file_contents(page, section))
 
-                # If file has other type than markdown
+                # If file has other extension than markdown
                 if parsed_contents == False:
                     continue
 
@@ -211,8 +229,11 @@ class Generator:
                 # which have no previous generations
                 if not Settings().check_regen_policy():
                     if self.check_if_page_exists(section, page_slug):
-                        print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
-                        continue
+                        if Manager().get_saved_hash(section, page) == Manager().get_file_hash(section, page):
+                            print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
+                            continue
+                        else:
+                            Manager().save_file_hash(section, page, Manager().get_file_hash(section, page))
 
                 parsed_metadata = parsed_contents['metadata']
                 parsed_contents = parsed_contents['contents']
@@ -269,7 +290,7 @@ class Generator:
                     # Add static url
                     parsed_contents['contents'] = Manager().parse_url(parsed_contents['contents'], 1)
 
-                    page_slug = self.get_slug(page)
+                    page_slug = Manager().get_slug(page)
                     page_id = int(parsed_contents['metadata'].get('ID'))
                     contents = parsed_contents['contents']
                     data = parsed_contents['metadata']
@@ -350,9 +371,6 @@ class Generator:
 
             i += per_page
 
-    def get_slug(self, filename):
-        return os.path.splitext(filename)[0]
-
     def parse_file(self, filename, contents):
         filetype = os.path.splitext(filename)[1]
 
@@ -388,9 +406,6 @@ class Generator:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[92m OK\033[0m'
         except EnvironmentError:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[91m ERROR\033[0m'
-
-    def get_all_sections(self):
-        return os.walk('input').next()[1]
 
     def check_if_page_exists(self, section, page):
         output_directory = Settings().get_output_directory()
