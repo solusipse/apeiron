@@ -1,5 +1,7 @@
 from jinja2 import Template, Environment, FileSystemLoader
-import os, shutil, markdown, time, ConfigParser, HTMLParser, hashlib
+import os, shutil, time, ConfigParser, HTMLParser, hashlib
+
+import lib.markdown as markdown
 
 # Pygments imports
 from pygments import highlight
