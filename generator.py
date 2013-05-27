@@ -160,10 +160,10 @@ class Manager:
 
     def get_sections_pages(self, section):
         filelist = os.walk('input/'+section).next()[2]
-        for f in filelist:
-            if not '.md' in f:
-                filelist.remove(f)
 
+        filelist = [item for item in filelist if item.endswith('.md')]
+
+        print filelist
         return filelist
 
     def get_file_contents(self, filename, section):
