@@ -1,5 +1,6 @@
 from jinja2 import Template, Environment, FileSystemLoader
 import os, shutil, time, ConfigParser, HTMLParser, hashlib
+import string, random
 
 import lib.markdown as markdown
 
@@ -40,6 +41,10 @@ output_directory = ./output
 # will be provided on all pages - {{ Static }}
 static_directory = ./static
 
+# These are your login informations and secret key. Both key and
+# password were randomly generated and don't need to be changed.
+#login_data
+
 # always regenerate everything:
 # if you want to regenerate every file when running generator,
 # uncomment line below
@@ -68,6 +73,9 @@ static_directory = ./static
         for section in Manager().get_all_sections():
             config += '['+section+'] \n'
             config += 'per_page = 5 \n\n'
+
+        config = config.replace('#login_data', 'login = admin\n' + 'password = ' \
+            + self.generate_password() + '\nsecret_key = ' + self.generate_secret_key())
 
         with open('settings.cfg', 'wb') as configfile:
             configfile.write(config)
@@ -111,6 +119,21 @@ static_directory = ./static
                 return True
         except:
             return False
+
+    def generate_password(self):
+        return ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(10))
+
+    def generate_secret_key(self):
+        return os.urandom(24)
+
+    def get_login(self):
+        return self.get_value('main', 'login')
+
+    def get_password(self):
+        return self.get_value('main', 'password')
+
+    def get_secret_key(self):
+        return self.get_value('main', 'secret_key')
 
 
 class Syntax(HTMLParser.HTMLParser):
@@ -160,10 +183,8 @@ class Manager:
 
     def get_sections_pages(self, section):
         filelist = os.walk('input/'+section).next()[2]
-
         filelist = [item for item in filelist if item.endswith('.md')]
 
-        print filelist
         return filelist
 
     def get_file_contents(self, filename, section):
@@ -198,6 +219,7 @@ class Manager:
     def save_file_hash(self, section, page, hash_info):
         with open('input/' + section + '/' + '.' + page + '.md5', 'w+') as input_file:
             input_file.write(hash_info)
+
 
 class Generator:
 

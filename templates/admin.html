@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+    <head>
+        <title>Apeiron - Admin Panel</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <style>
+            body
+            {
+                margin: 0px;
+                background: #DDD;
+                font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+            }
+
+            #top_panel
+            {
+                background:
+                linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+                background-color: #131313;
+                background-size: 20px 20px;
+
+                color: #FFFFFF;
+                font-size: 6em;
+
+                text-align: center;
+
+                
+            }
+
+            #login_box
+            {
+                background: #CCC;
+                margin: 0px auto;
+                width: 20%;
+                height: 20em;
+                margin-top: 5em;
+                font-size: 10px;
+                text-align: left;
+                padding-left: 10%;
+                color: #444;
+                padding-top: 5%;
+            }
+
+            #inner_box
+            {
+                width: 185px;
+            }
+
+            #wrap
+            {
+                min-height: 100%;
+            }
+
+            * {margin:0;padding:0;} 
+
+            html, body {height: 100%;}
+
+
+            #main
+            {
+                overflow:auto;
+                padding-bottom: 25px;
+            }  
+
+            #footer
+            {
+                position: relative;
+                margin-top: -30px;
+                height: 25px;
+                clear:both;
+
+                background:
+                linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+                background-color: #131313;
+                background-size: 20px 20px;
+
+                color: #FFFFFF;
+                font-size: 10px;
+                text-align: center;
+                padding-top: 5px;
+            } 
+
+            body:before
+            {
+                content:"";
+                height:100%;
+                float:left;
+                width:0;
+                margin-top:-32767px;
+            }
+
+            #footer a 
+            {
+                color: #FFFFFF;
+                text-decoration: none;
+            }
+
+
+        </style>
+    </head>
+    <body>
+
+        <div id="wrap">
+
+            <div id="top_panel">
+                admin panel
+            </div>
+
+            {% if notloggedin %}
+
+            <div id="login_box">
+                <div id="inner_box">
+                    {% if invalid %}
+                        <span style="color: #600;">Invalid login or password!</span>
+                    {% endif %}
+
+                    <form method="post">
+                        <label for="login">Login: </label><br>
+                        <input type="text" name="login"><br>
+
+                        <label for="password">Password: </label><br>
+                        <input type="password" name="password"><br>
+                        <span style="text-align: right; display: block;">
+                        <input type="submit" value="Send">
+                    </span>
+                    </form>
+
+                </div>
+            </div>
+
+            {% endif %}
+
+            {% if loggedin %}
+            
+            <div id="main">
+                Logged in!
+            </div>
+            
+            {% endif %}
+
+        </div>
+
+        <div id="footer">
+            <a href="https://github.com/solusipse/apeiron" target="_blank">Apeiron - static pages generator</a>
+        </div>
+
+    </body>
+</html>
