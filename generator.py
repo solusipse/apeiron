@@ -85,12 +85,15 @@ static_directory = ./static
         parser.read(['settings.cfg'])
         return parser.get(section, value)
 
-    def get_default_section(self, section):
+    def compare_default_section(self, section):
         default_section = self.get_value('main', 'default_section')
         if default_section != 'disabled':
             return default_section
         else:
             return False
+
+    def get_default_section(self):
+        return self.get_value('main', 'default_section')
 
     def get_output_directory(self):
         return Settings().get_value('main', 'output_directory')
@@ -104,6 +107,9 @@ static_directory = ./static
         except:
             template = self.get_value('main', 'default_template')
         return template
+
+    def get_default_template(self):
+        return self.get_value('main', 'default_template')
 
     def check_if_ascending(self, section):
         try:
@@ -293,7 +299,7 @@ class Generator:
                 # and save it to file
                 self._save_static_html(section, page_slug, contents)
 
-                if len(section_pages) == 1 and Settings().get_default_section(section) == section:
+                if len(section_pages) == 1 and Settings().compare_default_section(section) == section:
                     self._save_static_html(section, '..', contents)
 
     def generate_index_pages(self):
@@ -383,7 +389,7 @@ class Generator:
                 contents = self._generate_static_html(template, **context)
                 self._save_static_html(section, '.', contents)
 
-                if Settings().get_default_section(section) == section:
+                if Settings().compare_default_section(section) == section:
 
                     for j in buffer_dict:
                         buffer_dict[j]['Slug'] = section + '/' + page_slug_single

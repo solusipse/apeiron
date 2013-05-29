@@ -24,12 +24,22 @@
                 background-color: #131313;
                 background-size: 20px 20px;
 
-                color: #FFFFFF;
-                font-size: 6em;
-
                 text-align: center;
 
                 
+            }
+
+            h1
+            {
+                color: #FFFFFF;
+                font-size: 6em;
+                font-weight: 100;
+            }
+
+            h2
+            {
+                margin-left: -10px;
+                margin-bottom: 10px;
             }
 
             #login_box
@@ -56,7 +66,10 @@
                 min-height: 100%;
             }
 
-            * {margin:0;padding:0;} 
+            *
+            {
+                margin:0;padding:0;
+            } 
 
             html, body {height: 100%;}
 
@@ -105,6 +118,68 @@
                 text-decoration: none;
             }
 
+            input[type=text]
+            {
+                width: 180px;
+            }
+
+            input[type=password]
+            {
+                width: 180px;
+            }
+
+            input[type=submit]
+            {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            ul
+            {
+                list-style-type: square;
+                padding-left: 25px;
+                padding-bottom: 15px;
+            }
+
+            a
+            {
+                text-decoration: none;
+                color: #333;
+            }
+
+            #main
+            {
+                margin: 0px auto;
+                width: 60%;
+                font-size: 13px;
+                overflow: hidden;
+                position: relative;
+            }
+
+            #menu
+            {
+                width: 10%;
+                padding: 25px;
+                float: left;
+            }
+
+            #content
+            {
+                padding: 25px;
+                background: #CCC;
+                width: 75%;
+                float: left;
+                border-bottom: thick double #333;
+            }
+
+            #edit_page li:before {
+                content: "|";
+                padding-right: 5px;
+            }
+
+
+
+
 
         </style>
     </head>
@@ -113,7 +188,7 @@
         <div id="wrap">
 
             <div id="top_panel">
-                admin panel
+                <h1>admin panel</h1>
             </div>
 
             {% if notloggedin %}
@@ -129,10 +204,10 @@
                         <input type="text" name="login"><br>
 
                         <label for="password">Password: </label><br>
-                        <input type="password" name="password"><br>
-                        <span style="text-align: right; display: block;">
-                        <input type="submit" value="Send">
-                    </span>
+                        <input type="password" name="password">
+                        <p style="text-align: right; padding-top: 5px;">
+                            <input type="submit" value="Login">
+                        </p>
                     </form>
 
                 </div>
@@ -143,11 +218,80 @@
             {% if loggedin %}
             
             <div id="main">
-                Logged in!
-            </div>
-            
-            {% endif %}
+                <div id="menu">
+                    <b>Main:</b>
+                    <ul>
+                        <li>{% if dashboard %}<b>{% endif %}
+                            <a href="/">Dashboard</a>
+                        {% if dashboard %}</b>{% endif %}</li>
+                    </ul>
+                    <b>Sections:</b>
+                    <ul>
+                        {% for section in sections %}
+                            <li>{% if section_name == section %}<b>{% endif %}
+                                <a href="/section/{{ section }}/">{{ section }}</a>
+                                {% if section_name == section %}</b>{% endif %}</li>
+                        {% endfor %}
+                        <li><a href="/section/">new section</a></li>
+                    </ul>
+                    
+                    <b>Settings:</b>
+                    <ul>
+                        <li>Config file</li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </div>
+                <div id="content">
 
+
+                    {% if dashboard %}
+                        <h2>Dashboard</h2>
+
+                        Summary:
+                        <ul>
+                            <li>Default section: {{ default_section }}</li>
+                            <li>Number of sections: {{ sections|length }}</li>
+                            <li>Default template: {{ default_template }}</li>
+                            <li>Output directory: {{ output_directory }}</li>
+                            <li>Static directory: {{ static_directory }}</li>
+                            <li>Admin username: {{ admin_login }}</li>
+                            <li>Change admin password</li>
+                        </ul>
+
+                        Sections:
+                    {% endif %}
+
+
+                    {% if edit_section %}
+                        <h2>{{ section_name }}</h2>
+                        <br>
+
+                        <b>Actions:</b> Add new page | Edit | Select all | Remove selection | Inverse selection | Delete selected<br><br>
+
+                        <big>{{ section_name }}</big> ({{ section_pages|length }})<br>
+
+                        {% if section_pages|length > 0 %}
+
+                            <ul style="list-style-type: none;" id="edit_page">
+                            {% for page in section_pages|sort %}
+                                <li><input type="checkbox"> {{ page }}</li>
+                            {% endfor %}
+                            </ul>
+
+                        {% else %}
+
+                        That section is empty!
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+
+                </div>
+            </div>
+
+            {% endif %}
         </div>
 
         <div id="footer">

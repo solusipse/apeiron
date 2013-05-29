@@ -10,6 +10,13 @@ def main():
 
     if 'login' in session:
         context['loggedin'] = True
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['default_section'] = settings.get_default_section()
+        context['dashboard'] = True
+        context['default_template'] = settings.get_default_template()
+        context['output_directory'] = settings.get_output_directory()
+        context['static_directory'] = settings.get_static_directory()
+        context['admin_login'] = settings.get_login()
         return render_template('admin.html', **context)
 
     context['notloggedin'] = True
@@ -22,6 +29,25 @@ def main():
             context['invalid'] = True
 
     return render_template('admin.html', **context)
+
+@app.route('/section/<section_name>/')
+def edit_section(section_name):
+    if 'login' in session:
+
+        context = {}
+        context['loggedin'] = True
+        context['edit_section'] = True
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['section_name'] = section_name
+        context['section_pages'] = Generator.Manager().get_sections_pages(section_name)
+
+        return render_template('admin.html', **context)
+    else:
+        return redirect(url_for('main'))
+
+@app.route('/section/')
+def add_new_section():
+    return 'Not available yet.'
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -45,4 +71,4 @@ app.secret_key = settings.get_secret_key()
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')
