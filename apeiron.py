@@ -67,7 +67,7 @@ def edit_page(section_name, page):
 @app.route('/save/', methods=['GET', 'POST'])
 def save_page():
     if request.method == 'POST':
-        return 'post ok'
+        return request.form['content']
 
     return redirect(url_for('main'))
 
