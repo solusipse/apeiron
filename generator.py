@@ -226,6 +226,30 @@ class Manager:
         with open('input/' + section + '/' + '.' + page + '.md5', 'w+') as input_file:
             input_file.write(hash_info)
 
+    def parse_file(self, filename, contents):
+        filetype = os.path.splitext(filename)[1]
+
+        if filetype == '.md':
+            contents = self.parse_markdown(contents)
+            metadata = contents.metadata
+        
+            return {'contents': contents, 'metadata': metadata}
+        else:
+            return False
+
+    def parse_markdown(self, contents):
+        return markdown.markdown(contents, extras=["metadata"])
+
+    def create_pages_dictionary(self, section):
+        pages_list = self.get_sections_pages(section)
+        pages_dictionary = {}
+        
+        for page in pages_list:
+            parsed_contents = self.parse_file(page, self.get_file_contents(page, section))
+            pages_dictionary[page[:-3]] = parsed_contents['metadata']
+
+        return pages_dictionary
+
 
 class Generator:
 
@@ -242,7 +266,7 @@ class Generator:
             for page in section_pages:
                 page_slug = Manager().get_slug(page)
 
-                parsed_contents = self.parse_file(page, Manager().get_file_contents(page, section))
+                parsed_contents = Manager().parse_file(page, Manager().get_file_contents(page, section))
 
                 # If file has other extension than markdown
                 if parsed_contents == False:
@@ -310,7 +334,7 @@ class Generator:
 
             if len(section_pages) > 1:
                 for page in section_pages:
-                    parsed_contents = self.parse_file(page, Manager().get_file_contents(page, section))
+                    parsed_contents = Manager().parse_file(page, Manager().get_file_contents(page, section))
                     if parsed_contents == False:
                         continue
 
@@ -401,17 +425,6 @@ class Generator:
 
             i += per_page
 
-    def parse_file(self, filename, contents):
-        filetype = os.path.splitext(filename)[1]
-
-        if filetype == '.md':
-            contents = self.parse_markdown(contents)
-            metadata = contents.metadata
-        
-            return {'contents': contents, 'metadata': metadata}
-        else:
-            return False
-
     def generate_syntax_css(self):
         css_code = HtmlFormatter().get_style_defs('.highlight')
         output_directory = Settings().get_output_directory()
@@ -419,9 +432,6 @@ class Generator:
         if not os.path.isfile(output_directory + '/' + static_directory + '/Syntax.css'):
             with open(output_directory + '/' + static_directory + '/Syntax.css', 'w+') as css_file:
                 css_file.write(css_code)
-
-    def parse_markdown(self, contents):
-        return markdown.markdown(contents, extras=["metadata"])
 
     def _generate_static_html(self, template, **context):
         template = env.get_template(template)

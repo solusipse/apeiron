@@ -1,5 +1,6 @@
-from flask import Flask, render_template, session, redirect, url_for, escape, request
+from flask import Flask, render_template, session, redirect, url_for, escape, request, send_from_directory
 import generator as Generator
+import json
 
 app = Flask('apeiron')
 
@@ -39,19 +40,54 @@ def edit_section(section_name):
         context['edit_section'] = True
         context['sections'] = Generator.Manager().get_all_sections()
         context['section_name'] = section_name
-        context['section_pages'] = Generator.Manager().get_sections_pages(section_name)
+        context['section_pages'] = Generator.Manager().create_pages_dictionary(section_name)
 
         return render_template('admin.html', **context)
     else:
         return redirect(url_for('main'))
 
+@app.route('/section/<section_name>/<page>/')
+def edit_page(section_name, page):
+
+    if 'login' in session:
+
+        context = {}
+        context['loggedin'] = True
+        context['edit_page'] = True
+        context['output_directory'] = settings.get_output_directory()
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['section_name'] = section_name
+        context['page'] = page
+        context['contents'] = json.dumps(Generator.Manager().get_file_contents(page + '.md', section_name))[1:][:-1]
+
+        return render_template('admin.html', **context)
+    else:
+        return redirect(url_for('main'))
+
+@app.route('/save/', methods=['GET', 'POST'])
+def save_page():
+    if request.method == 'POST':
+        return 'post ok'
+
+    return redirect(url_for('main'))
+
+
 @app.route('/section/')
 def add_new_section():
     return 'Not available yet.'
 
-@app.errorhandler(404)
-def page_not_found(error):
-    return 'Error 404', 404
+@app.route('/editor.js')
+def show_editor():
+    try:
+        f = open('lib/epiceditor.min.js')
+    except IOError, e:
+        flask.abort(404)
+        return
+    return f.read()
+
+@app.route('/lib/<path:filename>')
+def lib_static(filename):
+    return send_from_directory(app.root_path + '/lib/', filename)
 
 @app.route('/logout')
 def logout():
@@ -61,6 +97,7 @@ def logout():
 def valid_login(login, password):
     if login == settings.get_login() and password == settings.get_password():
         return True
+
 
 settings = Generator.Settings()
 handler = Generator.Generator()

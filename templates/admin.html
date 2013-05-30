@@ -4,6 +4,8 @@
     <head>
         <title>Apeiron - Admin Panel</title>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <script type="text/javascript" src="/lib/jquery-2.0.1.min.js"></script>
+        {% if edit_page %}<script type="text/javascript" src="/lib/epiceditor.min.js"></script> {% endif %}
         <style>
             body
             {
@@ -139,6 +141,12 @@
                 list-style-type: square;
                 padding-left: 25px;
                 padding-bottom: 15px;
+                padding-top: 2px;
+            }
+
+            #menu li
+            {
+                padding-bottom: 2px;
             }
 
             a
@@ -150,7 +158,7 @@
             #main
             {
                 margin: 0px auto;
-                width: 60%;
+                width: 1100px;
                 font-size: 13px;
                 overflow: hidden;
                 position: relative;
@@ -158,7 +166,7 @@
 
             #menu
             {
-                width: 10%;
+                width: 150px;
                 padding: 25px;
                 float: left;
             }
@@ -167,7 +175,7 @@
             {
                 padding: 25px;
                 background: #CCC;
-                width: 75%;
+                width: 850px;
                 float: left;
                 border-bottom: thick double #333;
             }
@@ -175,6 +183,17 @@
             #edit_page li:before {
                 content: "|";
                 padding-right: 5px;
+            }
+
+            .file_list
+            {
+                border-left: solid 1px #000;
+                margin-left: 20px;
+            }
+
+            .file_list td
+            {
+                padding-left: 5px;
             }
 
 
@@ -272,17 +291,56 @@
 
                         {% if section_pages|length > 0 %}
 
-                            <ul style="list-style-type: none;" id="edit_page">
+                            <table class="file_list">
+                                <tr style="color: #999;">
+                                    <td style="width: 220px; padding-left: 20px;">Title</td>
+                                    <td style="width: 150px;">Author</td>
+                                    <td style="width: 120px;">Date</td>
+                                    <td style="width: 220px;">Filename</td>
+                                    <td style="width: 50px;">ID</td>
+                                </tr>
                             {% for page in section_pages|sort %}
-                                <li><input type="checkbox"> {{ page }}</li>
+                                <tr>
+                                    <td style="width: 220px;"><input type="checkbox"> <a href="{{ page }}/">{{ section_pages[page].Title }}</a></td>
+                                    <td style="width: 150px;">{{ section_pages[page].Author }}</td>
+                                    <td style="width: 120px;">{{ section_pages[page].Date }}</td>
+                                    <td style="width: 220px;"><a href="{{ page }}/">{{ page }}.md</a></td>
+                                    <td style="width: 50px;"><b>{{ section_pages[page].ID }}</td>
+                                </tr>
                             {% endfor %}
-                            </ul>
+
+                            </table>
+                            <div style="margin-left: 17px; margin-top: -3px;">&lfloor;</div>
+                            <div style="margin-left: 22px; margin-top: -11px;">&mdash;Add new page</div>
 
                         {% else %}
 
                         That section is empty!
 
                         {% endif %}
+
+                    {% endif %}
+
+                    {% if edit_page %}
+                        <script src="/lib/epiceditor.min.js"></script>
+                        <h2>{{ page }}</h2>
+                        File: {{ output_directory[2:] }}/{{ section_name }}/{{ page }}.md<br><br>
+
+                        <form method="post" action="/save/">
+
+                        <div id="epiceditor" style="height: 400px;"></div>
+
+                        <script>
+                            var opts = { basePath: '/lib/epiceditor' }
+                            var editor = new EpicEditor(opts).load();
+                            editor.importFile('{{ section_name }}/{{ page }}',"{{ contents }}");
+                        </script>
+                        
+                            <br>
+                            <input type="submit" value="Save!" style="float: right; margin-left: 10px;">
+                            <input type="submit" value="Save and generate!" style="float: right;">
+                        </form>
+
 
                     {% endif %}
 
