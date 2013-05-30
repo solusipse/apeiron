@@ -285,7 +285,7 @@
                         <h2>{{ section_name }}</h2>
                         <br>
 
-                        <b>Actions:</b> Add new page | Edit | Select all | Remove selection | Inverse selection | Delete selected<br><br>
+                        <b>Actions:</b> Add new page | Select all | Remove selection | Inverse selection | Delete selected<br><br>
 
                         <big>{{ section_name }}</big> ({{ section_pages|length }})<br>
 
@@ -307,11 +307,14 @@
                                     <td style="width: 220px;"><a href="{{ page }}/">{{ page }}.md</a></td>
                                     <td style="width: 50px;"><b>{{ section_pages[page].ID }}</td>
                                 </tr>
+                                
                             {% endfor %}
 
                             </table>
-                            <div style="margin-left: 17px; margin-top: -3px;">&lfloor;</div>
-                            <div style="margin-left: 22px; margin-top: -11px;">&mdash;Add new page</div>
+
+                            <div style="margin-left: 20px;">
+                                &rarr; Add new page
+                            </div>
 
                         {% else %}
 
