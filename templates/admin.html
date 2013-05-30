@@ -331,27 +331,27 @@
                         <div id="epiceditor" style="height: 400px;"></div>
                         <textarea name="content" id="content_form" style="display: none;"></textarea>
 
-                        <script>
+                        <script type="text/javascript">
                             var opts = { basePath: '/lib/epiceditor' }
                             var editor = new EpicEditor(opts);
-                            editor.importFile('{{ section_name }}/{{ page }}','{{ contents }}');
-                        </script>
 
-                        <script type="text/javascript">
-                            // basePath is just so it loads in JSBin.
-                            // Also note jQuery is used. This is just to make it easier to follow, but jQuery is not required.
+                            $(document).ready(function() {
+                                editor.importFile('{{ section_name }}/{{ page }}','{{ contents }}');
+                            });
+
 
                             $textarea = $('#content_form');
 
-                            // When it loads put the exiting content in there
                             editor.on('load', function (file) {
                                 $textarea.val(file.content);
                             });
 
-                            //Everytime it's updated, update the textarea
+
                             editor.on('update', function (file) {
                                 $textarea.val(file.content);
                             });
+
+                            
 
                             editor.load();
                         </script>
