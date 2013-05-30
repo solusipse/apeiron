@@ -243,6 +243,7 @@
                         <li>{% if dashboard %}<b>{% endif %}
                             <a href="/">Dashboard</a>
                         {% if dashboard %}</b>{% endif %}</li>
+                        <li>Generate!</li>
                     </ul>
                     <b>Sections:</b>
                     <ul>
@@ -327,9 +328,13 @@
                     {% if edit_page %}
                         <script src="/lib/epiceditor.min.js"></script>
                         <h2>{{ page }}</h2>
-                        File: {{ output_directory[2:] }}/{{ section_name }}/{{ page }}.md<br><br>
+                        File: input/{{ section_name }}/{{ page }}.md<br><br>
 
-                        <form method="post" action="/save/">
+                        {% if save_success %}
+                            <span style="color: #33FF33;">Page successfully saved!</span><br><br>
+                        {% endif %}
+
+                        <form method="post">
 
                         <div id="epiceditor" style="height: 400px;"></div>
                         <textarea name="content" id="content_form" style="display: none;"></textarea>

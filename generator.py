@@ -250,6 +250,13 @@ class Manager:
 
         return pages_dictionary
 
+    def save_page_md(self, section, page, content):
+        output_directory = Settings().get_output_directory()
+        file_location = './input/' + section + '/' + page + '.md'
+
+        with open(file_location, 'w+') as output_file:
+            output_file.write(content.encode('utf-8'))
+
 
 class Generator:
 

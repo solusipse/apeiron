@@ -46,15 +46,21 @@ def edit_section(section_name):
     else:
         return redirect(url_for('main'))
 
-@app.route('/section/<section_name>/<page>/')
+@app.route('/section/<section_name>/<page>/', methods=['GET', 'POST'])
 def edit_page(section_name, page):
 
     if 'login' in session:
 
+        context = {}
+
+        if request.method == 'POST':
+            Generator.Manager().save_page_md(section_name, page, request.form['content'])
+            context['save_success'] = True
+
         contents = json.dumps(Generator.Manager().get_file_contents(page + '.md', section_name))[1:][:-1]
         contents = contents.replace("\'", "\\'")
 
-        context = {}
+        
         context['loggedin'] = True
         context['edit_page'] = True
         context['output_directory'] = settings.get_output_directory()
@@ -67,7 +73,7 @@ def edit_page(section_name, page):
     else:
         return redirect(url_for('main'))
 
-@app.route('/save/', methods=['GET', 'POST'])
+@app.route('/generate/', methods=['GET', 'POST'])
 def save_page():
     if request.method == 'POST':
         return request.form['content']
