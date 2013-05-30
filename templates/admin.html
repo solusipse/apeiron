@@ -335,22 +335,17 @@
                             var opts = { basePath: '/lib/epiceditor' }
                             var editor = new EpicEditor(opts);
 
-                            $(document).ready(function() {
-                                editor.importFile('{{ section_name }}/{{ page }}','{{ contents }}');
-                            });
-
-
                             $textarea = $('#content_form');
-
-                            editor.on('load', function (file) {
-                                $textarea.val(file.content);
-                            });
-
 
                             editor.on('update', function (file) {
                                 $textarea.val(file.content);
                             });
 
+                            $(document).ready(function() {
+                                editor.importFile('{{ section_name }}/{{ page }}','{{ contents|safe }}');
+
+                                $textarea.val('{{ contents|safe }}');
+                            });
                             
 
                             editor.load();

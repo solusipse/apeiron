@@ -51,6 +51,9 @@ def edit_page(section_name, page):
 
     if 'login' in session:
 
+        contents = json.dumps(Generator.Manager().get_file_contents(page + '.md', section_name))[1:][:-1]
+        contents = contents.replace("\'", "\\'")
+
         context = {}
         context['loggedin'] = True
         context['edit_page'] = True
@@ -58,7 +61,7 @@ def edit_page(section_name, page):
         context['sections'] = Generator.Manager().get_all_sections()
         context['section_name'] = section_name
         context['page'] = page
-        context['contents'] = json.dumps(Generator.Manager().get_file_contents(page + '.md', section_name))[1:][:-1]
+        context['contents'] = contents
 
         return render_template('admin.html', **context)
     else:
