@@ -1,6 +1,8 @@
+# -*- encoding: utf-8 -*-
+
 from jinja2 import Template, Environment, FileSystemLoader
 import os, shutil, time, ConfigParser, HTMLParser, hashlib
-import string, random
+import string, random, codecs
 
 import lib.markdown as markdown
 
@@ -194,7 +196,7 @@ class Manager:
         return filelist
 
     def get_file_contents(self, filename, section):
-        with open('input/' + section + '/' + filename, 'r') as input_file:
+        with open('input/' + section + '/' + filename) as input_file:
             return input_file.read()
 
     def clean_output_directory(self):
@@ -254,8 +256,8 @@ class Manager:
         output_directory = Settings().get_output_directory()
         file_location = './input/' + section + '/' + page + '.md'
 
-        with open(file_location, 'w+') as output_file:
-            output_file.write(content.encode('utf-8'))
+        with codecs.open(file_location, 'w+', 'utf-8') as output_file:
+            output_file.write(content)
 
 
 class Generator:
@@ -448,7 +450,7 @@ class Generator:
         output_directory = Settings().get_output_directory()
         Manager().create_directory(output_directory+'/'+section+'/'+page)
         try:
-            with open(output_directory+'/'+section+'/'+page+'/index.html', 'w+') as html_file:
+            with codecs.open(output_directory+'/'+section+'/'+page+'/index.html', 'w+', 'utf-8') as html_file:
                 html_file.write(contents)
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[92m OK\033[0m'
         except EnvironmentError:

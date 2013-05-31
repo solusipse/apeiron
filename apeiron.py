@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 from flask import Flask, render_template, session, redirect, url_for, escape, request, send_from_directory
 import generator as Generator
 import json
