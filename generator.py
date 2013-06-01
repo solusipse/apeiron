@@ -132,7 +132,7 @@ static_directory = ./static
         return ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(10))
 
     def generate_secret_key(self):
-        return os.urandom(24)
+        return ''.join(random.choice(string.ascii_letters + string.digits) for x in range(24))
 
     def get_login(self):
         return self.get_value('main', 'login')
