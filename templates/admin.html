@@ -166,12 +166,6 @@
                 padding-bottom: 2px;
             }
 
-            a
-            {
-                text-decoration: none;
-                color: #333;
-            }
-
             #main
             {
                 margin: 0px auto;
@@ -250,6 +244,12 @@
                 font-family: "Lucida Console", Monaco, monospace;
                 padding-left: 8px;
                 outline: none;
+            }
+
+            a
+            {
+                text-decoration: none;
+                color: #333;
             }
 
 
@@ -341,9 +341,34 @@
                         <h2>{{ section_name }}</h2>
                         <br>
 
-                        <b>Actions:</b> Add new page | Select all | Remove selection | Inverse selection | Delete selected | Delete section<br><br>
+                        <b>Actions:</b> Add new page | <a href="javascript:;" id="check_all">Select all</a> | Delete selected | 
+                        <a href="/delete/section/{{ section_name }}/">Delete section</a><br><br>
 
                         <big>{{ section_name }}</big> ({{ section_pages|length }})<br>
+
+                        <script>
+
+                        $(document).ready(function() {
+                            $('#check_all').click(function() {
+                                if ($('.file_list input:checkbox').prop('checked'))
+                                {
+                                    $('.file_list input:checkbox').prop('checked',false);
+                                    $('#check_all').text('Select all');
+                                }
+                                else
+                                {
+                                    $('.file_list input:checkbox').prop('checked',true);
+                                    $('#check_all').text('Remove selection');
+                                }
+                            });
+
+                            $('#uncheck_all').click(function() {
+                                $('.file_list input:checkbox').removeAttr('checked');
+                            });
+                        });
+
+
+                        </script>
 
                         {% if section_pages|length > 0 %}
 
@@ -357,7 +382,7 @@
                                 </tr>
                             {% for page in section_pages|sort %}
                                 <tr>
-                                    <td style="width: 220px;"><input type="checkbox"> <a href="{{ page }}/">{{ section_pages[page].Title }}</a></td>
+                                    <td style="width: 220px;"><input type="checkbox" name="{{ page }}"> <a href="{{ page }}/">{{ section_pages[page].Title }}</a></td>
                                     <td style="width: 150px;">{{ section_pages[page].Author }}</td>
                                     <td style="width: 120px;">{{ section_pages[page].Date }}</td>
                                     <td style="width: 220px;"><a href="{{ page }}/">{{ page }}.md</a></td>
@@ -372,9 +397,10 @@
                                 &rarr; Add new page
                             </div>
 
+
                         {% else %}
 
-                        That section is empty!
+                            That section is empty!
 
                         {% endif %}
 
@@ -506,6 +532,29 @@
                         <br>
                         <input type="submit" value="Create section">
                     </form>
+
+                    {% endif %}
+
+                    {% if delete_section %}
+
+                        {% if success %}
+                            {{ section }} deleted!
+                        {% else %}
+
+                    Do you really want to delete section <b>{{ section }}</b>? This operation cannot be undone! You'll lost all sections page.<br><br>
+
+                    <form method="POST" style="display: inline;">
+
+                         <input type="submit" value="Delete" style="background: #500;">
+
+                    </form>
+                    <form method="GET" action="/" style="display: inline;">
+
+                         <input type="submit" value="Cancel">
+
+                    </form>
+
+                        {% endif %}
 
                     {% endif %}
 

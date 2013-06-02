@@ -87,6 +87,25 @@ def web_generate_pages():
 
     return redirect(url_for('main'))
 
+@app.route('/delete/section/<section_name>/', methods=['GET', 'POST'])
+def web_delete_section(section_name):
+    if 'login' in session:
+
+        context = {}
+
+        if request.method == 'POST':
+            Generator.Manager().delete_section(section_name)
+            context['success'] = True
+        
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['loggedin'] = True
+        context['section'] = section_name
+        context['delete_section'] = True
+
+        return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
+
 @app.route('/section/', methods=['GET', 'POST'])
 def add_new_section():
     if 'login' in session:

@@ -159,6 +159,13 @@ static_directory = ./static
         except:
             return False
 
+    def remove_section(self, section):
+
+        parser = ConfigParser.SafeConfigParser()
+        data = parser.read(['settings.cfg'])
+
+        print data
+
 
 class Syntax(HTMLParser.HTMLParser):
 
@@ -220,6 +227,9 @@ class Manager:
     def clean_output_directory(self):
         output_directory = Settings().get_output_directory()
         shutil.rmtree(output_directory)
+
+    def delete_section(self, section):
+        shutil.rmtree('input/' + section)
 
     def get_syntax_css_url(self, source):
         static_directory = Settings().get_static_directory()
