@@ -32,6 +32,7 @@ blockquote {
 	font-size: 13px;
 	font-family: "Lucida Console", Monaco, monospace;
 	padding: 2%;
+	outline: none;
 }
 
 hr

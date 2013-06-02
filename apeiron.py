@@ -70,8 +70,8 @@ def edit_page(section_name, page):
         context['contents'] = contents
 
         return render_template('admin.html', **context)
-    else:
-        return redirect(url_for('main'))
+
+    return redirect(url_for('main'))
 
 @app.route('/generate/')
 def web_generate_pages():
@@ -85,22 +85,38 @@ def web_generate_pages():
 
         return render_template('admin.html', **context)
 
-@app.route('/section/')
-def add_new_section():
-    return 'Not available yet.'
+    return redirect(url_for('main'))
 
-@app.route('/editor.js')
-def show_editor():
-    try:
-        f = open('lib/epiceditor.min.js')
-    except IOError, e:
-        flask.abort(404)
-        return
-    return f.read()
+@app.route('/section/', methods=['GET', 'POST'])
+def add_new_section():
+    if 'login' in session:
+
+        context = {}
+
+        if request.method == 'POST':
+            section = request.form['section']
+            if Generator.Manager().create_directory('input/' + section):
+                if Generator.Settings().add_new_section(section):
+                    context['section_message'] = 'Created new section!'
+                else:
+                    context['section_message'] = 'Could not create new section!'
+            else:
+                context['section_message'] = 'Section already exists!'
+
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['loggedin'] = True
+        context['section_creator'] = True
+
+        return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
 
 @app.route('/lib/<path:filename>')
 def lib_static(filename):
-    return send_from_directory(app.root_path + '/lib/', filename)
+    if 'login' in session:
+        return send_from_directory(app.root_path + '/lib/', filename)
+
+    return redirect(url_for('main'))
 
 @app.route('/logout')
 def logout():

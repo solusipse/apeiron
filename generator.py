@@ -143,6 +143,22 @@ static_directory = ./static
     def get_secret_key(self):
         return self.get_value('main', 'secret_key')
 
+    def add_new_section(self, section):
+
+        Config = ConfigParser.ConfigParser()
+        config_file = open("settings.cfg",'a')
+
+        try:
+            Config.add_section(section)
+            Config.set(section, 'per_page', '5')
+
+            Config.write(config_file)
+            config_file.close()
+
+            return True
+        except:
+            return False
+
 
 class Syntax(HTMLParser.HTMLParser):
 
@@ -177,6 +193,8 @@ class Manager:
     def create_directory(self, directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
+            return True
+        return False
 
     def set_static_directory(self):
         static_directory = Settings().get_static_directory()

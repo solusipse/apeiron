@@ -53,10 +53,10 @@
             {
                 background: #CCC;
                 margin: 0px auto;
-                width: 20%;
-                height: 20em;
+                width: 300px;
+                height: 200px;
                 margin-top: 5em;
-                font-size: 10px;
+                font-size: 15px;
                 text-align: left;
                 padding-left: 10%;
                 color: #444;
@@ -128,11 +128,13 @@
             .genok
             {
                 color: #336600;
+                float: right;
             }
 
             .genpass
             {
                 color: #6666FF;
+                float: right;
             }
 
             input[type=text]
@@ -212,7 +214,43 @@
             }
 
 
+            input[type=text]
+            {
+                background: #333;
+                border: none;
+                width: 250px;
+                height: 22px;
+                color: #EEE;
+                font-size: 13px;
+                font-family: "Lucida Console", Monaco, monospace;
+                padding-left: 8px;
+                outline: none;
+            }
 
+            input[type=submit]
+            {
+                background: #333;
+                border: none;
+                color: #EEE;
+                padding: 10px;
+                padding-left: 20px;
+                padding-right: 20px;
+                font-size: 13px;
+                font-family: "Lucida Console", Monaco, monospace;
+            }
+
+            #login_box input[type=text], input[type=password]
+            {
+                background: #333;
+                border: none;
+                width: 176px;
+                height: 22px;
+                color: #EEE;
+                font-size: 13px;
+                font-family: "Lucida Console", Monaco, monospace;
+                padding-left: 8px;
+                outline: none;
+            }
 
 
         </style>
@@ -303,7 +341,7 @@
                         <h2>{{ section_name }}</h2>
                         <br>
 
-                        <b>Actions:</b> Add new page | Select all | Remove selection | Inverse selection | Delete selected<br><br>
+                        <b>Actions:</b> Add new page | Select all | Remove selection | Inverse selection | Delete selected | Delete section<br><br>
 
                         <big>{{ section_name }}</big> ({{ section_pages|length }})<br>
 
@@ -352,6 +390,55 @@
 
                         <form method="post">
 
+                            <table>
+                                <tr>
+                                    <td style="width: 60px;">
+                                        Title:
+                                    </td>
+                                    <td>
+                                        <input type="text" name="title">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Author:
+                                    </td>
+                                    <td>
+                                        <input type="text" name="author">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Tags:
+                                    </td>
+                                    <td>
+                                        <input type="text" name="tags">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Date:
+                                    </td>
+                                    <td>
+                                        <input type="text" name="date">
+                                    </td>
+                                    <td>
+                                        <input type="submit" value="Now" style="height: 22px; padding: 0px; width: 70px;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        ID:
+                                    </td>
+                                    <td>
+                                       <input type="text" name="id">
+                                    </td>
+                                    <td>
+                                        <input type="submit" value="Last" style="height: 22px; padding: 0px; width: 70px;">
+                                    </td>
+                                </tr>
+                            </table>
+
                         <div class="wmd-panel">
                             <div id="wmd-button-bar-content"></div>
                             <textarea class="wmd-input" id="wmd-input-content" name="content">{{ contents }}</textarea>
@@ -387,7 +474,7 @@
 
                     {% if generator %}
 
-                    <h2>Generator output:</h2>
+                    <h2>Generator output</h2>
                     <h3>Single pages:</h3>
                         <pre style="background: #333; margin: 30px; color: #DDD; padding: 25px;">
 {% for item in pages_feedback -%}
@@ -404,7 +491,23 @@
 
                     {% endif %}
 
+                    {% if section_creator %}
 
+                    <h2>Create new section</h2>
+
+                    <br>
+
+                    {{ section_message }}
+
+                    <form method="post">
+                        <label for="login">Section name:</label>
+                        <input type="text" name="section" style="width: 250px;"><br>
+
+                        <br>
+                        <input type="submit" value="Create section">
+                    </form>
+
+                    {% endif %}
 
                 </div>
             </div>
