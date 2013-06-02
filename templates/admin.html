@@ -5,7 +5,12 @@
         <title>Apeiron - Admin Panel</title>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <script type="text/javascript" src="/lib/jquery-2.0.1.min.js"></script>
-        {% if edit_page %}<script type="text/javascript" src="/lib/epiceditor.min.js"></script> {% endif %}
+        {% if edit_page %}
+        <link rel="stylesheet" type="text/css" href="/lib/pagedown/editor.css" />
+        <script type="text/javascript" src="/lib/pagedown/Markdown.Converter.js"></script>
+        <script type="text/javascript" src="/lib/pagedown/Markdown.Sanitizer.js"></script>
+        <script type="text/javascript" src="/lib/pagedown/Markdown.Editor.js"></script>
+        {% endif %}
         <style>
             body
             {
@@ -326,7 +331,6 @@
                     {% endif %}
 
                     {% if edit_page %}
-                        <script src="/lib/epiceditor.min.js"></script>
                         <h2>{{ page }}</h2>
                         File: input/{{ section_name }}/{{ page }}.md<br><br>
 
@@ -336,29 +340,30 @@
 
                         <form method="post">
 
-                        <div id="epiceditor" style="height: 400px;"></div>
-                        <textarea name="content" id="content_form" style="display: none;"></textarea>
+                        <div class="wmd-panel">
+                            <div id="wmd-button-bar-content"></div>
+                            <textarea class="wmd-input" id="wmd-input-content" name="content">{{ contents }}</textarea>
+                        </div>
+                        <div id="wmd-preview-content" class="wmd-panel wmd-preview"></div>
 
                         <script type="text/javascript">
-                            var opts = { basePath: '/lib/epiceditor' }
-                            var editor = new EpicEditor(opts);
+                            (function () {
 
-                            $textarea = $('#content_form');
-
-                            editor.on('update', function (file) {
-                                $textarea.val(file.content);
-                            });
-
-                            $(document).ready(function() {
-                                editor.importFile(null,'{{ contents|safe }}');
-
-                                $textarea.val('{{ contents|safe }}');
-                            });
-                            
-
-                            editor.load();
+                                var converter2 = new Markdown.Converter();
+                                converter2.hooks.chain("preConversion", function (text) {
+                                    return text.replace(/\b(a\w*)/gi, "*$1*");
+                                });
+                                converter2.hooks.chain("plainLinkText", function (url) {
+                                    return "This is a link to " + url.replace(/^https?:\/\//, "");
+                                });
+                                var options = {
+                                    strings: { quoteexample: "whatever you're quoting, put it right here" }
+                                };
+                                var editor2 = new Markdown.Editor(converter2, "-content", options);
+                                
+                                editor2.run();
+                            })();
                         </script>
-
                         
                             <br>
                             <input type="submit" value="Save!" style="float: right; margin-left: 10px;">

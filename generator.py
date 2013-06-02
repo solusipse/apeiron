@@ -205,7 +205,7 @@ class Manager:
 
     def get_syntax_css_url(self, source):
         static_directory = Settings().get_static_directory()
-        if source == 0:
+        if source == 1:
             return '../../' + static_directory + '/Syntax.css'
         return '../' + static_directory + '/Syntax.css'
 
@@ -304,14 +304,17 @@ class Generator:
                 # Highlight syntax
                 parsed_contents = Syntax().highlight(parsed_contents)
 
+                context = {}
+
                 # Add static url
                 if len(section_pages) == 1:
                     parsed_contents = Manager().parse_url(parsed_contents, 1)
+                    context['SyntaxCSS'] = Manager().get_syntax_css_url(0)
                 else:
                     parsed_contents = Manager().parse_url(parsed_contents, 0)
+                    context['SyntaxCSS'] = Manager().get_syntax_css_url(1)
 
                 # Arguments for template generator
-                context = {}
                 context['Section'] = section
                 context['Page'] = page_slug
                 context['Contents'] = parsed_contents
@@ -321,7 +324,6 @@ class Generator:
                 context['Tags'] = parsed_metadata.get('Tags', '')
                 context['ID'] = parsed_metadata.get('ID', '')
                 context['Menu'] = self.sections
-                context['SyntaxCSS'] = Manager().get_syntax_css_url(0)
 
                 if page_slug == '.':
                     context['Page'] = section
@@ -397,7 +399,7 @@ class Generator:
             context['Index_page'] = True
             context['Dictionary'] = buffer_dict
             context['Menu'] = self.sections
-            context['SyntaxCSS'] = Manager().get_syntax_css_url(1)
+            context['SyntaxCSS'] = Manager().get_syntax_css_url(0)
 
             if i < count_dict - per_page:
                 context['next_page_url'] = '../' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'

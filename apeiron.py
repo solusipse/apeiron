@@ -59,10 +59,8 @@ def edit_page(section_name, page):
             Generator.Manager().save_page_md(section_name, page, request.form['content'])
             context['save_success'] = True
 
-        contents = json.dumps(Generator.Manager().get_file_contents(page + '.md', section_name))[1:][:-1]
-        contents = contents.replace("\'", "\\'")
+        contents = Generator.Manager().get_file_contents(page + '.md', section_name).decode('utf-8')
 
-        
         context['loggedin'] = True
         context['edit_page'] = True
         context['output_directory'] = settings.get_output_directory()
