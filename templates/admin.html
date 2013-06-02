@@ -340,9 +340,12 @@
                     {% if edit_section %}
                         <h2>{{ section_name }}</h2>
                         <br>
-
-                        <b>Actions:</b> Add new page | <a href="javascript:;" id="check_all">Select all</a> | Delete selected | 
-                        <a href="/delete/section/{{ section_name }}/">Delete section</a><br><br>
+                        <form action="/delete/page/" method="post" id="deleter">
+                        <b>Actions:</b> Add new page | <a href="javascript:;" id="check_all">Select all</a> |
+                            <a href="javascript:;" id="send_post">Delete selected pages</a> | 
+                        <a href="/delete/section/{{ section_name }}/">Delete section</a>
+                        <input type="hidden" name="section" value="{{ section_name }}">
+                        </form><br><br>
 
                         <big>{{ section_name }}</big> ({{ section_pages|length }})<br>
 
@@ -362,12 +365,25 @@
                                 }
                             });
 
-                            $('#uncheck_all').click(function() {
-                                $('.file_list input:checkbox').removeAttr('checked');
+                            $('#send_post').click(function() {
+
+                                var id = 0
+                                $('input[type=checkbox]').each(function () {
+                                    if (this.checked)
+                                    {
+                                        $('#deleter').append('<input type="hidden" name="page" value="' + $(this).attr('name') + '">');
+                                        id++;
+                                    }
+                                });
+
+                                if (id)
+                                {
+                                    if (confirm('All selected pages will be deleted. Are you sure?')) {
+                                        $(this).parents('form:first').submit();
+                                    }
+                                }
                             });
                         });
-
-
                         </script>
 
                         {% if section_pages|length > 0 %}

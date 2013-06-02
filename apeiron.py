@@ -95,7 +95,9 @@ def web_delete_section(section_name):
 
         if request.method == 'POST':
             Generator.Manager().delete_section(section_name)
-            context['success'] = True
+            # TO DO
+            #settings.remove_section(section_name)
+            return redirect(url_for('main'))
         
         context['sections'] = Generator.Manager().get_all_sections()
         context['loggedin'] = True
@@ -103,6 +105,18 @@ def web_delete_section(section_name):
         context['delete_section'] = True
 
         return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
+
+@app.route('/delete/page/', methods=['GET', 'POST'])
+def web_delete_page():
+    if 'login' in session:
+
+        if request.method == 'POST':
+            section = request.form['section']
+            for page in request.form.getlist('page'):
+                Generator.Manager().delete_page(section, page)
+            return redirect(url_for('main'))
 
     return redirect(url_for('main'))
 

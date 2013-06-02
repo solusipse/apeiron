@@ -144,7 +144,6 @@ static_directory = ./static
         return self.get_value('main', 'secret_key')
 
     def add_new_section(self, section):
-
         Config = ConfigParser.ConfigParser()
         config_file = open("settings.cfg",'a')
 
@@ -160,7 +159,6 @@ static_directory = ./static
             return False
 
     def remove_section(self, section):
-
         parser = ConfigParser.SafeConfigParser()
         data = parser.read(['settings.cfg'])
 
@@ -230,6 +228,9 @@ class Manager:
 
     def delete_section(self, section):
         shutil.rmtree('input/' + section)
+
+    def delete_page(self, section, page):
+        os.remove('input/' + section + '/' + page + '.md')
 
     def get_syntax_css_url(self, source):
         static_directory = Settings().get_static_directory()
