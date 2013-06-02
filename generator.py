@@ -267,7 +267,12 @@ class Generator:
         Manager().set_static_directory()
         self.generate_syntax_css()
 
+    def generate_feedback(self):
+        return self.generate_pages(), self.generate_index_pages()
+
     def generate_pages(self):
+        feedback = []
+
         for section in self.sections:
             section_pages = Manager().get_sections_pages(section)
             template = Settings().get_template(section)
@@ -294,6 +299,7 @@ class Generator:
                     if self.check_if_page_exists(section, page_slug):
                         if Manager().get_saved_hash(section, page) == Manager().get_file_hash(section, page):
                             print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
+                            feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' PASS')
                             continue
                         else:
                             Manager().save_file_hash(section, page, Manager().get_file_hash(section, page))
@@ -337,8 +343,13 @@ class Generator:
                 if len(section_pages) == 1 and Settings().compare_default_section(section) == section:
                     self._save_static_html(section, '..', contents)
 
+                feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' OK')
+
+        return feedback
+
     def generate_index_pages(self):
         index_dict = {}
+        feedback = []
 
         for section in self.sections:
             section_pages = Manager().get_sections_pages(section)
@@ -364,9 +375,14 @@ class Generator:
                     data['Slug'] = '../' + page_slug + '/'
                     index_dict[page_id] = data
 
-                self._generate_single_index_page(section, index_dict)
+                feedback.append(self._generate_single_index_page(section, index_dict))
+
+        return feedback
 
     def _generate_single_index_page(self, section, dictionary):
+
+        feedback = []
+
         per_page = int(Settings().get_value(section, 'per_page'))
         i = 0
 
@@ -434,7 +450,11 @@ class Generator:
                     contents = self._generate_static_html(template, **context)
                     self._save_static_html(section, '..', contents)
 
+            output_directory = Settings().get_output_directory()
+            feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' OK')
             i += per_page
+
+        return feedback
 
     def generate_syntax_css(self):
         css_code = HtmlFormatter().get_style_defs('.highlight')

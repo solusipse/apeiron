@@ -125,6 +125,16 @@
                 text-decoration: none;
             }
 
+            .genok
+            {
+                color: #336600;
+            }
+
+            .genpass
+            {
+                color: #6666FF;
+            }
+
             input[type=text]
             {
                 width: 180px;
@@ -248,7 +258,9 @@
                         <li>{% if dashboard %}<b>{% endif %}
                             <a href="/">Dashboard</a>
                         {% if dashboard %}</b>{% endif %}</li>
-                        <li>Generate!</li>
+                        <li>{% if generator %}<b>{% endif %}
+                            <a href="/generate/">Generate!</a>
+                        {% if generator %}</b>{% endif %}</li>
                     </ul>
                     <b>Sections:</b>
                     <ul>
@@ -335,7 +347,7 @@
                         File: input/{{ section_name }}/{{ page }}.md<br><br>
 
                         {% if save_success %}
-                            <span style="color: #33FF33;">Page successfully saved!</span><br><br>
+                            <span class="genok">Page successfully saved!</span><br><br>
                         {% endif %}
 
                         <form method="post">
@@ -370,6 +382,25 @@
                             <input type="submit" value="Save and generate!" style="float: right;">
                         </form>
 
+
+                    {% endif %}
+
+                    {% if generator %}
+
+                    <h2>Generator output:</h2>
+                    <h3>Single pages:</h3>
+                        <pre style="background: #333; margin: 30px; color: #DDD; padding: 25px;">
+{% for item in pages_feedback -%}
+{{ item.replace('OK', '<span class="genok">OK</span>').replace('PASS', '<span class="genpass">PASS</span>')|safe }}
+{% endfor %}</pre>
+                    <h3>Index pages:</h3>
+                        <pre style="background: #333; margin: 30px; color: #DDD; padding: 25px;">
+{% for item in index_feedback -%}
+{% for subitem in item -%}
+{{ subitem.replace('OK', '<span class="genok">OK</span>')|safe }}
+{% endfor -%}
+{% endfor -%}
+                        </pre>
 
                     {% endif %}
 

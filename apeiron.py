@@ -73,13 +73,17 @@ def edit_page(section_name, page):
     else:
         return redirect(url_for('main'))
 
-@app.route('/generate/', methods=['GET', 'POST'])
-def save_page():
-    if request.method == 'POST':
-        return request.form['content']
+@app.route('/generate/')
+def web_generate_pages():
+    if 'login' in session:
 
-    return redirect(url_for('main'))
+        context = {}
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['loggedin'] = True
+        context['generator'] = True
+        context['pages_feedback'], context['index_feedback'] = handler.generate_feedback()
 
+        return render_template('admin.html', **context)
 
 @app.route('/section/')
 def add_new_section():
