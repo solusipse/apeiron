@@ -56,10 +56,21 @@ def edit_page(section_name, page):
         context = {}
 
         if request.method == 'POST':
-            Generator.Manager().save_page_md(section_name, page, request.form['content'])
+            md_formatted_file = '---\n'
+            md_formatted_file += 'Title: ' + request.form['title'] + '\n'
+            md_formatted_file += 'Author: ' + request.form['author'] + '\n'
+            md_formatted_file += 'Tags: ' + request.form['tags'] + '\n'
+            md_formatted_file += 'Date: ' + request.form['date'] + '\n'
+            md_formatted_file += 'ID: ' + request.form['id'] + '\n'
+            md_formatted_file += '---\n'
+            md_formatted_file += request.form['content']
+            Generator.Manager().save_page_md(section_name, page, md_formatted_file)
             context['save_success'] = True
 
         contents = Generator.Manager().get_file_contents(page + '.md', section_name).decode('utf-8')
+        parsed_contents = Generator.Manager().parse_file("file.md", contents)
+
+        metadata = parsed_contents['metadata']
 
         context['loggedin'] = True
         context['edit_page'] = True
@@ -67,7 +78,13 @@ def edit_page(section_name, page):
         context['sections'] = Generator.Manager().get_all_sections()
         context['section_name'] = section_name
         context['page'] = page
-        context['contents'] = contents
+        context['contents'] = contents.split('---')[2]
+
+        context['title'] = metadata['Title']
+        context['date'] = metadata['Date']
+        context['tags'] = metadata['Tags']
+        context['author'] = metadata['Author']
+        context['ID'] = metadata['ID']
 
         return render_template('admin.html', **context)
 

@@ -53,12 +53,12 @@
             {
                 background: #CCC;
                 margin: 0px auto;
-                width: 300px;
+                width: 380px;
                 height: 200px;
                 margin-top: 5em;
                 font-size: 15px;
                 text-align: left;
-                padding-left: 10%;
+                padding-left: 200px;
                 color: #444;
                 padding-top: 5%;
             }
@@ -427,7 +427,7 @@
                         File: input/{{ section_name }}/{{ page }}.md<br><br>
 
                         {% if save_success %}
-                            <span class="genok">Page successfully saved!</span><br><br>
+                            <span class="genok" style="float: left;">Page successfully saved!</span><br><br>
                         {% endif %}
 
                         <form method="post">
@@ -438,7 +438,7 @@
                                         Title:
                                     </td>
                                     <td>
-                                        <input type="text" name="title">
+                                        <input type="text" name="title" value="{{ title }}">
                                     </td>
                                 </tr>
                                 <tr>
@@ -446,7 +446,7 @@
                                         Author:
                                     </td>
                                     <td>
-                                        <input type="text" name="author">
+                                        <input type="text" name="author" value="{{ author }}">
                                     </td>
                                 </tr>
                                 <tr>
@@ -454,7 +454,7 @@
                                         Tags:
                                     </td>
                                     <td>
-                                        <input type="text" name="tags">
+                                        <input type="text" name="tags" value="{{ tags }}">
                                     </td>
                                 </tr>
                                 <tr>
@@ -462,7 +462,7 @@
                                         Date:
                                     </td>
                                     <td>
-                                        <input type="text" name="date">
+                                        <input type="text" name="date" value="{{ date }}">
                                     </td>
                                     <td>
                                         <input type="submit" value="Now" style="height: 22px; padding: 0px; width: 70px;">
@@ -473,7 +473,7 @@
                                         ID:
                                     </td>
                                     <td>
-                                       <input type="text" name="id">
+                                       <input type="text" name="id" value="{{ ID }}">
                                     </td>
                                     <td>
                                         <input type="submit" value="Last" style="height: 22px; padding: 0px; width: 70px;">
