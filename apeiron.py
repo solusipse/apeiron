@@ -48,6 +48,31 @@ def edit_section(section_name):
     else:
         return redirect(url_for('main'))
 
+
+@app.route('/section/<section_name>/page/new/', methods=['GET', 'POST'])
+def new_page(section_name):
+    if 'login' in session:
+
+        context = {}
+
+        if request.method == 'POST':
+            page = request.form['page']
+            if Generator.Manager().check_if_page_exists(section_name, page):
+                context['page_status'] = True
+            else:
+                Generator.Manager().save_page_md(section_name, page, '')
+                return redirect('/section/' + section_name + '/' + page)
+
+        context['loggedin'] = True
+        context['new_page'] = True
+        context['sections'] = Generator.Manager().get_all_sections()
+        context['section_name'] = section_name
+
+        return render_template('admin.html', **context)
+    else:
+        return redirect(url_for('main'))
+
+
 @app.route('/section/<section_name>/<page>/', methods=['GET', 'POST'])
 def edit_page(section_name, page):
 

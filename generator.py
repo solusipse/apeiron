@@ -288,6 +288,11 @@ class Manager:
         with codecs.open(file_location, 'w+', 'utf-8') as output_file:
             output_file.write(content)
 
+    def check_if_page_exists(self, section, page):
+        output_directory = Settings().get_output_directory()
+        if os.path.isfile(output_directory+'/'+section+'/'+page+'/index.html'):
+            return True
+
 
 class Generator:
 
@@ -325,7 +330,7 @@ class Generator:
                 # If not specified, generated are only those files
                 # which have no previous generations
                 if not Settings().check_regen_policy():
-                    if self.check_if_page_exists(section, page_slug):
+                    if Manager().check_if_page_exists(section, page_slug):
                         if Manager().get_saved_hash(section, page) == Manager().get_file_hash(section, page):
                             print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
                             feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' PASS')
@@ -506,8 +511,3 @@ class Generator:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[92m OK\033[0m'
         except EnvironmentError:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[91m ERROR\033[0m'
-
-    def check_if_page_exists(self, section, page):
-        output_directory = Settings().get_output_directory()
-        if os.path.isfile(output_directory+'/'+section+'/'+page+'/index.html'):
-            return True

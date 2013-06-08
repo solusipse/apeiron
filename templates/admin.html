@@ -307,7 +307,9 @@
                                 <a href="/section/{{ section }}/">{{ section }}</a>
                                 {% if section_name == section %}</b>{% endif %}</li>
                         {% endfor %}
-                        <li><a href="/section/">new section</a></li>
+                        <li>{% if section_creator %}<b>{% endif %}
+                            <a href="/section/">new section</a>
+                            {% if section_creator %}</b>{% endif %}</li>
                     </ul>
                     
                     <b>Settings:</b>
@@ -341,9 +343,9 @@
                         <h2>{{ section_name }}</h2>
                         <br>
                         <form action="/delete/page/" method="post" id="deleter">
-                        <b>Actions:</b> Add new page | <a href="javascript:;" id="check_all">Select all</a> |
+                        <b>Actions:</b> <a href="/section/{{ section_name }}/page/new">Add new page</a> | <a href="javascript:;" id="check_all">Select all</a> |
                             <a href="javascript:;" id="send_post">Delete selected pages</a> | 
-                        <a href="/delete/section/{{ section_name }}/">Delete section</a>
+                        <a href="/delete/section/{{ section_name }}/">Clear section</a>
                         <input type="hidden" name="section" value="{{ section_name }}">
                         </form><br><br>
 
@@ -410,7 +412,7 @@
                             </table>
 
                             <div style="margin-left: 20px;">
-                                &rarr; Add new page
+                                &rarr; <a href="/section/{{ section_name }}/page/new">Add new page</a>
                             </div>
 
 
@@ -594,6 +596,28 @@
                     </form>
 
                         {% endif %}
+
+                    {% endif %}
+
+                    {% if new_page %}
+
+                    <h2>Add new page to <u>{{ section_name }}</u>.</h2>
+
+                    <br>
+
+                    {% if page_status %}
+
+                    <span style="color: #300;">Page already exists or you have no required permissions!</span><br><br>
+
+                    {% endif %}
+
+                    <form method="post">
+                        <label for="login">Page name:</label>
+                        <input type="text" name="page" style="width: 250px;"><br>
+
+                        <br>
+                        <input type="submit" value="Add new page">
+                    </form>
 
                     {% endif %}
 
