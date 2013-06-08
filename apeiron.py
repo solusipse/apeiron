@@ -78,13 +78,36 @@ def edit_page(section_name, page):
         context['sections'] = Generator.Manager().get_all_sections()
         context['section_name'] = section_name
         context['page'] = page
-        context['contents'] = contents.split('---')[2]
 
-        context['title'] = metadata['Title']
-        context['date'] = metadata['Date']
-        context['tags'] = metadata['Tags']
-        context['author'] = metadata['Author']
-        context['ID'] = metadata['ID']
+        try:
+            context['contents'] = contents.split('---')[2]
+        except(IndexError):
+            context['contents'] = contents
+
+        try:
+            context['title'] = metadata['Title']
+        except(KeyError):
+            pass
+
+        try:
+            context['date'] = metadata['Date']
+        except(KeyError):
+            pass
+
+        try:
+            context['tags'] = metadata['Tags']
+        except(KeyError):
+            pass
+
+        try:
+            context['author'] = metadata['Author']
+        except(KeyError):
+            pass
+
+        try:
+            context['ID'] = metadata['ID']
+        except(KeyError):
+            pass
 
         return render_template('admin.html', **context)
 
@@ -168,7 +191,7 @@ def lib_static(filename):
 
     return redirect(url_for('main'))
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout():
     session.pop('login', None)
     return redirect(url_for('main'))
