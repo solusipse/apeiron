@@ -221,7 +221,7 @@
                 outline: none;
             }
 
-            input[type=submit]
+            input[type=submit], input[type=button]
             {
                 background: #333;
                 border: none;
@@ -430,7 +430,7 @@
                             <span class="genok" style="float: left;">Page successfully saved!</span><br><br>
                         {% endif %}
 
-                        <form method="post">
+                        <form method="post" name="contents_saver">
 
                             <table>
                                 <tr>
@@ -465,7 +465,7 @@
                                         <input type="text" name="date" value="{{ date }}">
                                     </td>
                                     <td>
-                                        <input type="submit" value="Now" style="height: 22px; padding: 0px; width: 70px;">
+                                        <input type="button" value="Now" style="height: 22px; padding: 0px; width: 70px;">
                                     </td>
                                 </tr>
                                 <tr>
@@ -476,7 +476,7 @@
                                        <input type="text" name="id" value="{{ ID }}">
                                     </td>
                                     <td>
-                                        <input type="submit" value="Last" style="height: 22px; padding: 0px; width: 70px;">
+                                        <input type="button" value="Last" style="height: 22px; padding: 0px; width: 70px;">
                                     </td>
                                 </tr>
                             </table>
@@ -504,11 +504,34 @@
                                 
                                 editor2.run();
                             })();
+
+
+                            function validateForm()
+                            {
+
+                                var empty_inputs = new Array();
+
+                                $('input[type=text]').each(function(index) {
+                                    if ($(this).val() == "" || $(this).val() == null)
+                                        empty_inputs.push($(this).attr('name'));
+                                });
+
+                                if (empty_inputs.length > 0)
+                                {
+                                    alert('You have to fill these fields: ' + empty_inputs);
+                                    return false;
+                                }
+
+                                return true;
+
+                            }
+
+
                         </script>
                         
                             <br>
-                            <input type="submit" value="Save!" style="float: right; margin-left: 10px;">
-                            <input type="submit" value="Save and generate!" style="float: right;">
+                            <input type="submit" onclick="return validateForm();" value="Save!" style="float: right; margin-left: 10px;">
+                            <input type="submit" onclick="return validateForm();" value="Save and generate!" style="float: right;">
                         </form>
 
 
