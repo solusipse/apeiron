@@ -479,7 +479,7 @@ class Generator:
                 if Settings().compare_default_section(section) == section:
 
                     for j in buffer_dict:
-                        buffer_dict[j]['Slug'] = section + '/' + page_slug_single
+                        buffer_dict[j]['Slug'] = section + '/' + buffer_dict[j]['Slug']
 
                     if i < count_dict - per_page:
                         context['next_page_url'] = section + '/' + str(i+1+per_page) + '-' + str(i+per_page*2) + '/'
