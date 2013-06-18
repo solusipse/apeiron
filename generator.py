@@ -449,6 +449,7 @@ class Generator:
             context['Index_page'] = True
             context['Dictionary'] = buffer_dict
             context['Menu'] = self.sections
+            context['Section'] = section
             context['SyntaxCSS'] = Manager().get_syntax_css_url(0)
 
             if i < count_dict - per_page:

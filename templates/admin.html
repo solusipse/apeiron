@@ -315,6 +315,7 @@
                     <b>Settings:</b>
                     <ul>
                         <li>Config file</li>
+                        <li>Templates</li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </div>
@@ -336,7 +337,6 @@
                                         <li>Output directory: {{ output_directory }}</li>
                                         <li>Static directory: {{ static_directory }}</li>
                                         <li>Admin username: {{ admin_login }}</li>
-                                        <li>Change admin password</li>
                                     </ul>
 
                                 </td>
@@ -346,9 +346,7 @@
                                     <ul>
                                     {% for section in sections %}
                                         <li>
-                                            <a href="/section/{{ section }}/">{{ section }}</a><br>
-                                            [delete] [add new page]
-                                            
+                                            <a href="/section/{{ section }}/">{{ section }}</a>
                                     {% endfor %}
                                     </ul>
 
@@ -357,7 +355,7 @@
 
                                     <h3>Actions:</h3>
                                     <ul>
-                                        <li>Generate</li>
+                                        <li><a href="/generate/">Generate</a></li>
                                         <li>Regenerate everything</li>
                                         <br>
 
