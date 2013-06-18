@@ -159,14 +159,10 @@ static_directory = ./static
             return False
 
     def remove_section(self, section):
-        config_file = open("settings.cfg",'w')
-
-        parser = ConfigParser.SafeConfigParser()
-        parser.read('settings.cfg')
-
-        parser.remove_section(section)
-
-        parser.write(config_file)
+        config = ConfigParser.RawConfigParser()
+        config.read('settings.cfg')
+        config.remove_section(section)
+        config.write(open('settings.cfg', 'w'))
 
 class Syntax(HTMLParser.HTMLParser):
 
