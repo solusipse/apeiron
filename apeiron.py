@@ -160,8 +160,7 @@ def web_delete_section(section_name):
 
         if request.method == 'POST':
             Generator.Manager().delete_section(section_name)
-            # TO DO
-            #settings.remove_section(section_name)
+            settings.remove_section(section_name)
             return redirect(url_for('main'))
         
         context['sections'] = Generator.Manager().get_all_sections()
