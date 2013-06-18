@@ -375,6 +375,7 @@ class Generator:
 
                 if len(section_pages) == 1 and Settings().compare_default_section(section) == section:
                     self._save_static_html(section, '..', contents)
+                    feedback.append(output_directory+'/index.html' + ' OK')
 
                 feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' OK')
 
@@ -458,6 +459,8 @@ class Generator:
             contents = self._generate_static_html(template, **context)
             self._save_static_html(section, page_slug, contents)
 
+            output_directory = Settings().get_output_directory()
+
             # If section was marked as default in config file
             # its index page will be generated in top of other
             # sections. To make urls compatibile with the rest
@@ -483,7 +486,8 @@ class Generator:
                     contents = self._generate_static_html(template, **context)
                     self._save_static_html(section, '..', contents)
 
-            output_directory = Settings().get_output_directory()
+                    feedback.append(output_directory+'/index.html' + ' OK')
+
             feedback.append(output_directory+'/'+section+'/'+page_slug+'/index.html' + ' OK')
             i += per_page
 
