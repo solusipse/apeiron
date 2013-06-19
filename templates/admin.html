@@ -362,7 +362,7 @@
                                     <h3>Actions:</h3>
                                     <ul>
                                         <li><a href="/generate/">Generate</a></li>
-                                        <li>Regenerate everything</li>
+                                        <li><a href="/generate/?force">Regenerate everything</a></li>
                                         <br>
 
                                         <li>Edit templates</li>
@@ -638,6 +638,14 @@
 {% endfor -%}
 {% endfor -%}
                         </pre>
+
+                        <form method="get" style="display: inline;">
+                            <input type="submit" value="Generate again">
+                        </form>
+                        <form method="get" style="display: inline;">
+                            <input type="submit" name="force" value="Regenerate everything">
+                        </form>
+
 
                     {% endif %}
 

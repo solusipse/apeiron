@@ -158,7 +158,11 @@ def web_generate_pages():
         context['sections'] = Generator.Manager().get_all_sections()
         context['loggedin'] = True
         context['generator'] = True
-        context['pages_feedback'], context['index_feedback'] = handler.generate_feedback()
+
+        if 'force' in request.args:
+            context['pages_feedback'], context['index_feedback'] = handler.generate_feedback(force=True)
+        else:
+            context['pages_feedback'], context['index_feedback'] = handler.generate_feedback(force=False)
 
         return render_template('admin.html', **context)
 
@@ -239,7 +243,7 @@ def valid_login(login, password):
 
 settings = Generator.Settings()
 handler = Generator.Generator()
-handler.generate_pages()
+handler.generate_pages(False)
 handler.generate_index_pages()
 
 app.secret_key = settings.get_secret_key()

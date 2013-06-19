@@ -301,10 +301,10 @@ class Generator:
         Manager().set_static_directory()
         self.generate_syntax_css()
 
-    def generate_feedback(self):
-        return self.generate_pages(), self.generate_index_pages()
+    def generate_feedback(self, force):
+        return self.generate_pages(force), self.generate_index_pages()
 
-    def generate_pages(self):
+    def generate_pages(self, force):
         feedback = []
 
         for section in self.sections:
@@ -329,7 +329,7 @@ class Generator:
 
                 # If not specified, generated are only those files
                 # which have no previous generations
-                if not Settings().check_regen_policy():
+                if not Settings().check_regen_policy() and not force:
                     if Manager().check_if_page_exists(section, page_slug):
                         if Manager().get_saved_hash(section, page) == Manager().get_file_hash(section, page):
                             print output_directory+'/'+section+'/'+page_slug+'/index.html' + '\033[94m PASS\033[0m'
