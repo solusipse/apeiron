@@ -429,16 +429,16 @@
                                 <tr style="color: #999;">
                                     <td style="width: 220px; padding-left: 20px;">Title</td>
                                     <td style="width: 150px;">Author</td>
-                                    <td style="width: 120px;">Date</td>
+                                    <td style="width: 160px;">Date</td>
                                     <td style="width: 220px;">Filename</td>
                                     <td style="width: 50px;">ID</td>
                                 </tr>
-                            {% for page in section_pages|sort %}
+                            {% for page in section_pages|sort(True) %}
                                 <tr>
-                                    <td style="width: 220px;"><input type="checkbox" name="{{ page }}"> <a href="{{ page }}/">{{ section_pages[page].Title }}</a></td>
+                                    <td style="width: 220px;"><input type="checkbox" name="{{ section_pages[page].Slug }}"> <a href="{{ section_pages[page].Slug }}/">{{ section_pages[page].Title }}</a></td>
                                     <td style="width: 150px;">{{ section_pages[page].Author }}</td>
                                     <td style="width: 120px;">{{ section_pages[page].Date }}</td>
-                                    <td style="width: 220px;"><a href="{{ page }}/">{{ page }}.md</a></td>
+                                    <td style="width: 220px;"><a href="{{ section_pages[page].Slug }}/">{{ section_pages[page].Slug }}.md</a></td>
                                     <td style="width: 50px;"><b>{{ section_pages[page].ID }}</td>
                                 </tr>
                                 
@@ -499,10 +499,10 @@
                                         Date:
                                     </td>
                                     <td>
-                                        <input type="text" name="date" value="{{ date }}">
+                                        <input type="text" id="date_input" name="date" value="{{ date }}">
                                     </td>
                                     <td>
-                                        <input type="button" value="Now" style="height: 22px; padding: 0px; width: 70px;">
+                                        <input type="button" value="Now" id="now_button" style="height: 22px; padding: 0px; width: 70px;">
                                     </td>
                                 </tr>
                                 <tr>
@@ -510,10 +510,10 @@
                                         ID:
                                     </td>
                                     <td>
-                                       <input type="text" name="id" value="{{ ID }}">
+                                       <input type="text" id="last_input" name="id" value="{{ ID }}">
                                     </td>
                                     <td>
-                                        <input type="button" value="Last" style="height: 22px; padding: 0px; width: 70px;">
+                                        <input type="button" value="Last" id="last_button" style="height: 22px; padding: 0px; width: 70px;">
                                     </td>
                                 </tr>
                             </table>
@@ -562,6 +562,32 @@
                                 return true;
 
                             }
+
+                            function getCurrentDate()
+                            {
+                                var d = new Date();
+                                var curr_date = d.getDate();
+                                var curr_month = d.getMonth() + 1; //Months are zero based
+                                var curr_year = d.getFullYear();
+                                var curr_hour = d.getHours();
+                                var curr_minute = d.getMinutes();
+                                var curr_sec = d.getSeconds();
+                                var output = curr_date + "-" + curr_month + "-" + curr_year + ' ' + curr_hour + ':' + curr_minute + ':' + curr_sec;
+                                return output;
+                            }
+
+                            function handleButtons()
+                            {
+                                $("#now_button").click(function() {
+                                     $('#date_input').val(getCurrentDate());
+                                });
+
+                                $("#last_button").click(function() {
+                                     $('#last_input').val('{{ highest_id }}');
+                                });
+                            }
+
+                            handleButtons();
 
 
                         </script>

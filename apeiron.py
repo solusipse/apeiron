@@ -107,6 +107,15 @@ def edit_page(section_name, page):
         context['section_name'] = section_name
         context['page'] = page
 
+        id_list = []
+
+        pages_dict = Generator.Manager().create_pages_dictionary(section_name)
+
+        for item in pages_dict:
+            id_list.append(int(pages_dict[item]['ID']))
+
+        context['highest_id'] = max(id_list) + 1
+
         try:
             context['contents'] = contents.split('---')[2]
         except(IndexError):

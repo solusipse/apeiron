@@ -276,7 +276,8 @@ class Manager:
         
         for page in pages_list:
             parsed_contents = self.parse_file(page, self.get_file_contents(page, section))
-            pages_dictionary[page[:-3]] = parsed_contents['metadata']
+            parsed_contents['metadata']['Slug'] = page[:-3]
+            pages_dictionary[int(parsed_contents['metadata']['ID'])] = parsed_contents['metadata']
 
         return pages_dictionary
 
