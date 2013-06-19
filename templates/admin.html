@@ -566,12 +566,28 @@
                             function getCurrentDate()
                             {
                                 var d = new Date();
-                                var curr_date = d.getDate();
-                                var curr_month = d.getMonth() + 1; //Months are zero based
-                                var curr_year = d.getFullYear();
-                                var curr_hour = d.getHours();
-                                var curr_minute = d.getMinutes();
-                                var curr_sec = d.getSeconds();
+                                var curr_date = d.getDate().toString();
+                                var curr_month = (d.getMonth() + 1).toString();
+                                var curr_year = d.getFullYear().toString();
+                                var curr_hour = d.getHours().toString();
+                                var curr_minute = d.getMinutes().toString();
+                                var curr_sec = d.getSeconds().toString();
+
+                                if (curr_month.length < 2)
+                                    curr_month = '0' + curr_month;
+
+                                if (curr_date.length < 2)
+                                    curr_date = '0' + curr_date;
+
+                                if (curr_hour.length < 2)
+                                    curr_hour = '0' + curr_hour;
+
+                                if (curr_minute.length < 2)
+                                    curr_minute = '0' + curr_minute;
+
+                                if (curr_sec.length < 2)
+                                    curr_sec = '0' + curr_sec;
+
                                 var output = curr_date + "-" + curr_month + "-" + curr_year + ' ' + curr_hour + ':' + curr_minute + ':' + curr_sec;
                                 return output;
                             }
