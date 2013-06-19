@@ -113,6 +113,10 @@ static_directory = ./static
     def get_default_template(self):
         return self.get_value('main', 'default_template')
 
+    def get_contents(self):
+        with open('settings.cfg') as settings_file:
+            return settings_file.read()
+
     def check_if_ascending(self, section):
         try:
             ascending = self.get_value(section, 'ascending')
@@ -163,6 +167,11 @@ static_directory = ./static
         config.read('settings.cfg')
         config.remove_section(section)
         config.write(open('settings.cfg', 'w'))
+
+    def save_config(self, contents):
+        with open('settings.cfg', 'w') as config_file:
+            config_file.write(contents)
+
 
 class Syntax(HTMLParser.HTMLParser):
 

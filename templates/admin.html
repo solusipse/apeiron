@@ -11,6 +11,9 @@
         <script type="text/javascript" src="/lib/pagedown/Markdown.Sanitizer.js"></script>
         <script type="text/javascript" src="/lib/pagedown/Markdown.Editor.js"></script>
         {% endif %}
+        {% if config_editor %}
+        <link rel="stylesheet" type="text/css" href="/lib/pagedown/editor.css" />
+        {% endif %}
         <style>
             body
             {
@@ -320,8 +323,10 @@
                     
                     <b>Settings:</b>
                     <ul>
-                        <li>Config file</li>
-                        <li>Templates</li>
+                        <li>{% if config_editor %}<b>{% endif %}
+                            <a href="/config/">Config file</a>
+                            {% if config_editor %}</b>{% endif %}</li>
+                        <li><a href="/config/templates/">Templates</a></li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </div>
@@ -710,6 +715,17 @@
                         <input type="submit" value="Add new page">
                     </form>
 
+                    {% endif %}
+
+                    {% if config_editor %}
+                        <h2>Config file editor</h2>
+                        {% if save_success %}
+                            <span class="genok" style="float: left;">Config saved!</span><br><br>
+                        {% endif %}
+                        <form method="POST">
+                            <textarea class="wmd-input" name="content">{{ config_contents }}</textarea>
+                            <input type="submit" value="Save config" style="float: right;">
+                        </form>
                     {% endif %}
 
                 </div>

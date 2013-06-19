@@ -168,6 +168,38 @@ def web_generate_pages():
 
     return redirect(url_for('main'))
 
+@app.route('/config/', methods=['GET', 'POST'])
+def config_editor():
+    if 'login' in session:
+
+        context = {}
+
+        if request.method == 'POST':
+            settings.save_config(request.form['content'])
+            context['save_success'] = True
+            
+        context['sections'] = manager.get_all_sections()
+        context['loggedin'] = True
+        context['config_editor'] = True
+        context['config_contents'] = settings.get_contents()
+
+        return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
+
+@app.route('/config/templates/')
+def templates_editor():
+    if 'login' in session:
+
+        context = {}
+        context['sections'] = manager.get_all_sections()
+        context['loggedin'] = True
+        context['template_editor'] = True
+
+        return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
+
 @app.route('/delete/section/<section_name>/', methods=['GET', 'POST'])
 def web_delete_section(section_name):
     if 'login' in session:
