@@ -248,10 +248,11 @@ app.secret_key = settings.get_secret_key()
 
 if __name__ == "__main__":
     port = 5000
-    try:
-        port = int(sys.argv[ [i for i,x in enumerate(sys.argv) if x == 'port'][0] + 1 ])
-    except(IndexError, ValueError):
-        print 'You should provide valid port number! Using default port.'
+    if 'port' in sys.argv:
+        try:
+            port = int(sys.argv[ [i for i,x in enumerate(sys.argv) if x == 'port'][0] + 1 ])
+        except(IndexError, ValueError):
+            print 'You should provide valid port number! Using default port.'
 
     for arg in sys.argv:
         if arg == 'force':
