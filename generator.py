@@ -2,7 +2,7 @@
 
 from jinja2 import Template, Environment, FileSystemLoader
 import os, shutil, time, ConfigParser, HTMLParser, hashlib
-import string, random, codecs
+import string, random, codecs, sys
 
 import lib.markdown as markdown
 
@@ -520,3 +520,16 @@ class Generator:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[92m OK\033[0m'
         except EnvironmentError:
             print output_directory+'/'+section+'/'+page+'/index.html' + '\033[91m ERROR\033[0m'
+
+
+
+# Creating settings file
+Settings()
+
+if __name__ == "__main__":
+    for arg in sys.argv:
+        if arg == 'force':
+            Generator().generate_feedback(force=True)
+            exit()
+
+    Generator().generate_feedback(force=False)

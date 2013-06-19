@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, session, redirect, url_for, escape, request, send_from_directory
 import generator as Generator
-import json
+import json, sys
 
 app = Flask('apeiron')
 
@@ -13,7 +13,7 @@ def main():
 
     if 'login' in session:
         context['loggedin'] = True
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['default_section'] = settings.get_default_section()
         context['dashboard'] = True
         context['default_template'] = settings.get_default_template()
@@ -40,9 +40,9 @@ def edit_section(section_name):
         context = {}
         context['loggedin'] = True
         context['edit_section'] = True
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['section_name'] = section_name
-        context['section_pages'] = Generator.Manager().create_pages_dictionary(section_name)
+        context['section_pages'] = manager.create_pages_dictionary(section_name)
 
         return render_template('admin.html', **context)
     else:
@@ -57,15 +57,15 @@ def new_page(section_name):
 
         if request.method == 'POST':
             page = request.form['page']
-            if Generator.Manager().check_if_page_exists(section_name, page):
+            if manager.check_if_page_exists(section_name, page):
                 context['page_status'] = True
             else:
-                Generator.Manager().save_page_md(section_name, page, '')
+                manager.save_page_md(section_name, page, '')
                 return redirect('/section/' + section_name + '/' + page)
 
         context['loggedin'] = True
         context['new_page'] = True
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['section_name'] = section_name
 
         return render_template('admin.html', **context)
@@ -89,27 +89,27 @@ def edit_page(section_name, page):
             md_formatted_file += 'ID: ' + request.form['id'] + '\n'
             md_formatted_file += '---\n'
             md_formatted_file += request.form['content']
-            Generator.Manager().save_page_md(section_name, page, md_formatted_file)
+            manager.save_page_md(section_name, page, md_formatted_file)
             context['save_success'] = True
 
             if request.form.has_key('generate'):
                 return redirect(url_for('web_generate_pages'))
 
-        contents = Generator.Manager().get_file_contents(page + '.md', section_name).decode('utf-8')
-        parsed_contents = Generator.Manager().parse_file("file.md", contents)
+        contents = manager.get_file_contents(page + '.md', section_name).decode('utf-8')
+        parsed_contents = manager.parse_file("file.md", contents)
 
         metadata = parsed_contents['metadata']
 
         context['loggedin'] = True
         context['edit_page'] = True
         context['output_directory'] = settings.get_output_directory()
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['section_name'] = section_name
         context['page'] = page
 
         id_list = []
 
-        pages_dict = Generator.Manager().create_pages_dictionary(section_name)
+        pages_dict = manager.create_pages_dictionary(section_name)
 
         for item in pages_dict:
             id_list.append(int(pages_dict[item]['ID']))
@@ -155,7 +155,7 @@ def web_generate_pages():
     if 'login' in session:
 
         context = {}
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['loggedin'] = True
         context['generator'] = True
 
@@ -175,11 +175,11 @@ def web_delete_section(section_name):
         context = {}
 
         if request.method == 'POST':
-            Generator.Manager().delete_section(section_name)
+            manager.delete_section(section_name)
             settings.remove_section(section_name)
             return redirect(url_for('main'))
         
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['loggedin'] = True
         context['section'] = section_name
         context['delete_section'] = True
@@ -195,7 +195,7 @@ def web_delete_page():
         if request.method == 'POST':
             section = request.form['section']
             for page in request.form.getlist('page'):
-                Generator.Manager().delete_page(section, page)
+                manager.delete_page(section, page)
             return redirect(url_for('main'))
 
     return redirect(url_for('main'))
@@ -208,7 +208,7 @@ def add_new_section():
 
         if request.method == 'POST':
             section = request.form['section']
-            if Generator.Manager().create_directory('input/' + section):
+            if manager.create_directory('input/' + section):
                 if Generator.Settings().add_new_section(section):
                     context['section_message'] = 'Created new section!'
                 else:
@@ -216,7 +216,7 @@ def add_new_section():
             else:
                 context['section_message'] = 'Section already exists!'
 
-        context['sections'] = Generator.Manager().get_all_sections()
+        context['sections'] = manager.get_all_sections()
         context['loggedin'] = True
         context['section_creator'] = True
 
@@ -240,14 +240,26 @@ def valid_login(login, password):
     if login == settings.get_login() and password == settings.get_password():
         return True
 
-
 settings = Generator.Settings()
 handler = Generator.Generator()
-handler.generate_pages(False)
-handler.generate_index_pages()
+manager = Generator.Manager()
 
 app.secret_key = settings.get_secret_key()
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run(host='0.0.0.0')
+    port = 5000
+    try:
+        port = int(sys.argv[ [i for i,x in enumerate(sys.argv) if x == 'port'][0] + 1 ])
+    except(IndexError, ValueError):
+        print 'You should provide valid port number! Using default port.'
+
+    for arg in sys.argv:
+        if arg == 'force':
+            handler.generate_feedback(force=True)
+        elif arg == 'gen':
+            if not 'force' in sys.argv:
+                handler.generate_feedback(force=False)
+        elif arg == 'admin':
+            if 'debug' in sys.argv:
+                app.debug = True
+            app.run(host='0.0.0.0', port=port)
