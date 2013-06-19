@@ -137,6 +137,12 @@
                 float: right;
             }
 
+            .error
+            {
+                color: #F00;
+                float: right;
+            }
+
             input[type=text]
             {
                 width: 180px;
@@ -628,7 +634,7 @@
                         <pre style="background: #333; margin: 30px; color: #DDD; padding: 25px;">
 {% for item in index_feedback -%}
 {% for subitem in item -%}
-{{ subitem.replace('OK', '<span class="genok">OK</span>')|safe }}
+{{ subitem.replace('OK', '<span class="genok">OK</span>').replace('ERROR!', '<span class="error">ERROR</span>')|safe }}
 {% endfor -%}
 {% endfor -%}
                         </pre>

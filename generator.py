@@ -444,7 +444,11 @@ class Generator:
             else:
                 for j in dictionary:
                     if j > i and j <= i + per_page:
-                        buffer_dict[count_dict - j] = dictionary[count_dict - j + 1]
+                        try:
+                            buffer_dict[count_dict - j] = dictionary[count_dict - j + 1]
+                        except(KeyError):
+                            feedback.append('ERROR! Check pages order!')
+                            print 'ERROR! Check pages order!'
 
             context = {}
             context['Index_page'] = True
