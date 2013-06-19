@@ -187,14 +187,25 @@ def config_editor():
 
     return redirect(url_for('main'))
 
-@app.route('/config/templates/')
+@app.route('/config/templates/', methods=['GET', 'POST'])
 def templates_editor():
     if 'login' in session:
 
         context = {}
+
+        if request.method == 'POST':
+            manager.save_template(request.form['template'], request.form['content'])
+            context['save_success'] = True
+
+        
         context['sections'] = manager.get_all_sections()
         context['loggedin'] = True
         context['template_editor'] = True
+        context['templates'] = manager.get_templates()
+
+        if 'template' in request.args and request.args['template'] != '':
+            context['selected_template'] = request.args['template']
+            context['template_code'] = manager.get_template_code(request.args['template'])
 
         return render_template('admin.html', **context)
 

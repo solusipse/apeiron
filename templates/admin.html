@@ -11,7 +11,7 @@
         <script type="text/javascript" src="/lib/pagedown/Markdown.Sanitizer.js"></script>
         <script type="text/javascript" src="/lib/pagedown/Markdown.Editor.js"></script>
         {% endif %}
-        {% if config_editor %}
+        {% if config_editor or template_editor %}
         <link rel="stylesheet" type="text/css" href="/lib/pagedown/editor.css" />
         {% endif %}
         <style>
@@ -37,6 +37,11 @@
                 text-align: center;
 
                 
+            }
+
+            select:focus
+            {
+                outline: none;
             }
 
             h1
@@ -326,7 +331,9 @@
                         <li>{% if config_editor %}<b>{% endif %}
                             <a href="/config/">Config file</a>
                             {% if config_editor %}</b>{% endif %}</li>
-                        <li><a href="/config/templates/">Templates</a></li>
+                        <li>{% if template_editor %}<b>{% endif %}
+                            <a href="/config/templates/">Templates</a>
+                            {% if template_editor %}</b>{% endif %}</li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </div>
@@ -725,6 +732,27 @@
                         <form method="POST">
                             <textarea class="wmd-input" name="content">{{ config_contents }}</textarea>
                             <input type="submit" value="Save config" style="float: right;">
+                        </form>
+                    {% endif %}
+
+                    {% if template_editor %}
+                        <h2>Templates</h2>
+                        {% if save_success %}
+                            <span class="genok" style="float: left;">Config saved!</span><br><br>
+                        {% endif %}
+                        <form type="get">
+                        <select name="template" style="padding: 5px; width: 100%; font-family: courier; background: #333; border: 0; color: #FFF; font-size: 16px;" onchange="javascript:this.form.submit();">
+                            <option value="">Select template to edit</option>
+                            {% for template in templates %}
+                                <option value="{{ template }}" {% if template == selected_template %}selected="selected"{% endif %}>{{ template }}</option>
+                            {% endfor %}
+                        </select>
+                        </form>
+                        
+                        <form method="POST">
+                            <textarea class="wmd-input" name="content">{{ template_code }}</textarea>
+                            <input type="hidden" name="template" value="{{ selected_template }}">
+                            <input type="submit" value="Save template" style="float: right;">
                         </form>
                     {% endif %}
 

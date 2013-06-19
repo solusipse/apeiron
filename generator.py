@@ -302,6 +302,17 @@ class Manager:
         if os.path.isfile(output_directory+'/'+section+'/'+page+'/index.html'):
             return True
 
+    def get_templates(self):
+        return os.walk('templates/').next()[2]
+
+    def get_template_code(self, template):
+        with open('templates/'+template) as template_file:
+            return template_file.read()
+
+    def save_template(self, template, contents):
+        with open('templates/' + template, 'w') as template_file:
+            template_file.write(contents)
+
 
 class Generator:
 
