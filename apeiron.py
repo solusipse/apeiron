@@ -92,6 +92,9 @@ def edit_page(section_name, page):
             Generator.Manager().save_page_md(section_name, page, md_formatted_file)
             context['save_success'] = True
 
+            if request.form.has_key('generate'):
+                return redirect(url_for('web_generate_pages'))
+
         contents = Generator.Manager().get_file_contents(page + '.md', section_name).decode('utf-8')
         parsed_contents = Generator.Manager().parse_file("file.md", contents)
 
