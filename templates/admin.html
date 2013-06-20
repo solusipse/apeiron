@@ -451,12 +451,12 @@
                                     <td style="width: 220px;">Filename</td>
                                     <td style="width: 50px;">ID</td>
                                 </tr>
-                            {% for page in section_pages|sort(True) %}
+                            {% for page in section_pages %}
                                 <tr>
-                                    <td style="width: 220px;"><input type="checkbox" name="{{ section_pages[page].Slug }}"> <a href="{{ section_pages[page].Slug }}/">{{ section_pages[page].Title }}</a></td>
+                                    <td style="width: 220px;"><input type="checkbox" name="{{ page }}"> <a href="{{ page }}/">{{ section_pages[page].Title }}</a></td>
                                     <td style="width: 150px;">{{ section_pages[page].Author }}</td>
                                     <td style="width: 120px;">{{ section_pages[page].Date }}</td>
-                                    <td style="width: 220px;"><a href="{{ section_pages[page].Slug }}/">{{ section_pages[page].Slug }}.md</a></td>
+                                    <td style="width: 220px;"><a href="{{ page }}/">{{ page }}.md</a></td>
                                     <td style="width: 50px;"><b>{{ section_pages[page].ID }}</td>
                                 </tr>
                                 

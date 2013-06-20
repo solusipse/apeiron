@@ -112,7 +112,10 @@ def edit_page(section_name, page):
         pages_dict = manager.create_pages_dictionary(section_name)
 
         for item in pages_dict:
-            id_list.append(int(pages_dict[item]['ID']))
+            try:
+                id_list.append(int(pages_dict[item]['ID']))
+            except(KeyError):
+                pass
 
         try:
             context['highest_id'] = max(id_list) + 1
