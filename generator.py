@@ -239,6 +239,10 @@ class Manager:
 
     def delete_page(self, section, page):
         os.remove('input/' + section + '/' + page + '.md')
+        try:
+            os.remove('input/' + section + '/' + page + '.md.md5')
+        except(OSError):
+            pass
 
     def get_syntax_css_url(self, source):
         static_directory = Settings().get_static_directory()
@@ -316,7 +320,6 @@ class Manager:
 class Generator:
 
     def __init__(self):
-        self.sections = Manager().get_all_sections()
         Manager().set_static_directory()
         self.generate_syntax_css()
 
@@ -324,6 +327,7 @@ class Generator:
         return self.generate_pages(force), self.generate_index_pages()
 
     def generate_pages(self, force):
+        self.sections = Manager().get_all_sections()
         feedback = []
 
         for section in self.sections:
