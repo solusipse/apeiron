@@ -286,7 +286,10 @@ class Manager:
         for page in pages_list:
             parsed_contents = self.parse_file(page, self.get_file_contents(page, section))
             parsed_contents['metadata']['Slug'] = page[:-3]
-            pages_dictionary[int(parsed_contents['metadata']['ID'])] = parsed_contents['metadata']
+            try:
+                pages_dictionary[int(parsed_contents['metadata']['ID'])] = parsed_contents['metadata']
+            except:
+                pass
 
         return pages_dictionary
 
