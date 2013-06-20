@@ -114,7 +114,10 @@ def edit_page(section_name, page):
         for item in pages_dict:
             id_list.append(int(pages_dict[item]['ID']))
 
-        context['highest_id'] = max(id_list) + 1
+        try:
+            context['highest_id'] = max(id_list) + 1
+        except(ValueError):
+            context['highest_id'] = 1
 
         try:
             context['contents'] = contents.split('---')[2]
