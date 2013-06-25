@@ -123,7 +123,7 @@ def edit_page(section_name, page):
             context['highest_id'] = 1
 
         try:
-            context['contents'] = contents.split('---')[2]
+            context['contents'] = '---'.join(contents.split('---')[2:])
         except(IndexError):
             context['contents'] = contents
 
