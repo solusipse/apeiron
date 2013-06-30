@@ -189,10 +189,13 @@ class Syntax(HTMLParser.HTMLParser):
 
     def handle_data(self, data):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
-            lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
-            formatter = HtmlFormatter(linenos=True, cssclass="highlight")
-            output_html = highlight(data.replace(data.splitlines()[0], '', 1), lexer, formatter)
-            self.inputhtml = self.inputhtml.replace(data, output_html).replace('ampersand___', '&')
+            try:
+                lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
+                formatter = HtmlFormatter(linenos=True, cssclass="highlight")
+                output_html = highlight(data.replace(data.splitlines()[0], '', 1), lexer, formatter)
+                self.inputhtml = self.inputhtml.replace(data, output_html).replace('ampersand___', '&')
+            except:
+                pass
 
 
 class Manager:
