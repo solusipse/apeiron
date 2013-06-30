@@ -183,9 +183,6 @@ class Syntax(HTMLParser.HTMLParser):
         return self.inputhtml
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'code' and len(attrs):
-            self.language = attrs[0][1]
-
         self.tag_stack.append(tag.lower())
 
     def handle_endtag(self, tag):
@@ -194,11 +191,11 @@ class Syntax(HTMLParser.HTMLParser):
     def handle_data(self, data):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
             try:
-                lexer = get_lexer_by_name(self.language, stripall=True)
+                lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
                 output_html = highlight(data, lexer, HtmlFormatter())
                 self.inputhtml = self.inputhtml.replace(data, output_html)
             except:
-                print 'Could not highlight syntax!'
+                pass
 
 
 class Manager:
