@@ -177,9 +177,8 @@ class Syntax(HTMLParser.HTMLParser):
 
     def highlight(self, html):
         self.tag_stack = []
-        self.inputhtml = html
-        self.feed(html)
-
+        self.inputhtml = html.replace('&', 'ampersand___').replace(';', '')
+        self.feed(self.inputhtml)
         return self.inputhtml
 
     def handle_starttag(self, tag, attrs):
@@ -190,13 +189,10 @@ class Syntax(HTMLParser.HTMLParser):
 
     def handle_data(self, data):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
-            try:
-                lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
-                formatter = HtmlFormatter(linenos=True, cssclass="highlight")
-                output_html = highlight(data.replace(data.splitlines()[0], ''), lexer, formatter)
-                self.inputhtml = self.inputhtml.replace(data, output_html)
-            except:
-                pass
+            lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
+            formatter = HtmlFormatter(linenos=True, cssclass="highlight")
+            output_html = highlight(data.replace(data.splitlines()[0], '', 1), lexer, formatter)
+            self.inputhtml = self.inputhtml.replace(data, output_html).replace('ampersand___', '&')
 
 
 class Manager:
