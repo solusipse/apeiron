@@ -192,7 +192,8 @@ class Syntax(HTMLParser.HTMLParser):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
             try:
                 lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
-                output_html = highlight(data, lexer, HtmlFormatter())
+                formatter = HtmlFormatter(linenos=True, cssclass="highlight")
+                output_html = highlight(data.replace(data.splitlines()[0], ''), lexer, formatter)
                 self.inputhtml = self.inputhtml.replace(data, output_html)
             except:
                 pass
