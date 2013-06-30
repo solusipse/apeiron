@@ -46,18 +46,23 @@ program for the first time. To regenerate it, simply delete it and run program a
 File format
 -----
 Format for input files is markdown. There is live markdown editor provided in web panel.
-There is also syntax colouring option. To colour some fragment of text put it in code tag with class
-parameter that contains language that will be used:
-```
-<code class="python">
-  some code
-</code>
+There is also syntax colouring option. To colour some fragment of text you need to ident it
+with at least four spaces or one tab and put language name in first line. When code is being highlighted it also
+being put into table with line numbers.
+```python
+This will be coloured:
+    
+    python
+    if __name__ == "__main__":
+    for arg in sys.argv:
+        if arg == 'force':
+            Generator().generate_feedback(force=True)
+            exit()
 
-Some regular text.
+This will not:
 
-<code class="c">
-  some code
-</code>
+    cat /etc/nginx/nginx.conf > nginx_backup.txt
+
 ```
 
 Config file
