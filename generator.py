@@ -195,7 +195,7 @@ class Syntax(HTMLParser.HTMLParser):
                 output_html = highlight(data.replace(data.splitlines()[0], '', 1), lexer, formatter)
                 self.inputhtml = self.inputhtml.replace(data, output_html).replace('ampersand___', '&')
             except:
-                pass
+                self.inputhtml = self.inputhtml.replace('ampersand___', '&')
 
 
 class Manager:
