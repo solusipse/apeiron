@@ -4,7 +4,7 @@ from flask import Flask, render_template, session, redirect, url_for, escape, re
 import generator as Generator
 import json, sys
 
-app = Flask('apeiron')
+app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
