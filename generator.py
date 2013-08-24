@@ -239,6 +239,17 @@ class Manager:
         except(OSError):
             pass
 
+    def rename_section(self, section, new_name):
+        Settings().add_new_section(new_name)
+        try:
+            Settings().remove_section(section)
+        except(NoSectionError):
+            pass
+
+        output_directory = Settings().get_output_directory()
+        shutil.copytree('input/'+section, 'input/'+new_name)
+        self.delete_section(section)
+
     def delete_page(self, section, page):
         output_directory = Settings().get_output_directory()
         os.remove('input/' + section + '/' + page + '.md')

@@ -39,6 +39,11 @@
                 
             }
 
+            .red {
+                color: #600;
+                font-weight: bold;
+            }
+
             select:focus
             {
                 outline: none;
@@ -396,9 +401,9 @@
                         <h2>{{ section_name }}</h2>
                         <br>
                         <form action="/delete/page/" method="post" id="deleter">
-                        <b>Actions:</b> <a href="/section/{{ section_name }}/page/new">Add new page</a> | <a href="javascript:;" id="check_all">Select all</a> |
-                            <a href="javascript:;" id="send_post">Delete selected pages</a> | 
-                        <a href="/delete/section/{{ section_name }}/">Delete this section</a>
+                        <b>Actions:</b> <a href="/section/{{ section_name }}/page/new">Add new page</a> | <a href="javascript:;" id="check_all">Select all</a> | <a href="javascript:;" id="send_post">Delete selected pages</a> | 
+                        <a href="/rename/{{ section_name }}/">Rename this section</a> |
+                        <a href="/delete/section/{{ section_name }}/" class="red">Delete this section</a>
                         <input type="hidden" name="section" value="{{ section_name }}">
                         </form><br><br>
 
@@ -695,6 +700,25 @@
                     <form method="GET" action="/" style="display: inline;">
 
                          <input type="submit" value="Cancel">
+
+                    </form>
+
+                        {% endif %}
+
+                    {% endif %}
+
+                    {% if rename_section %}
+
+                        {% if success %}
+                            {{ section }} deleted!
+                        {% else %}
+
+                    Enter new name for section <b>{{ section }}</b>:<br><br>
+
+                    <form method="POST">
+
+                        <input type="text" name="new_name"><br><br>
+                        <input type="submit" value="Change name">
 
                     </form>
 

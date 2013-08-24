@@ -237,6 +237,25 @@ def web_delete_section(section_name):
 
     return redirect(url_for('main'))
 
+@app.route('/rename/<section_name>/', methods=['GET', 'POST'])
+def web_rename_section(section_name):
+    if 'login' in session:
+
+        context = {}
+
+        if request.method == 'POST':
+            manager.rename_section(section_name, request.form['new_name'])
+            return redirect(url_for('main'))
+        
+        context['sections'] = manager.get_all_sections()
+        context['loggedin'] = True
+        context['section'] = section_name
+        context['rename_section'] = True
+
+        return render_template('admin.html', **context)
+
+    return redirect(url_for('main'))
+
 @app.route('/delete/page/', methods=['GET', 'POST'])
 def web_delete_page():
     if 'login' in session:
