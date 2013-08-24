@@ -1,7 +1,7 @@
 apeiron
 =======
 
-Static websites generator with web admin panel based on flask and jinja2. Its main purpose is to provide
+Static website generator with web admin panel based on flask and jinja2. Its main purpose is to provide
 simple, lightweight platform for bloggers. There is still much to do, although it's usable even now.
 
 Requirements
@@ -38,6 +38,10 @@ python apeiron.py admin
 For flask debbuger (use it only if something doesn't work):
 ```
 python apeiron.py debug admin
+```
+To update Apeiron type:
+```
+python apeiron.py update
 ```
 
 To adjust apeiron to your needs, edit file called `settings.cfg`. It is generated when you run
