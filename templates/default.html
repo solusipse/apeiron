@@ -1,38 +1,82 @@
-<style>
-.post{background: #DDDDDD; margin-bottom: 20px;}
-</style>
+<html>
+    <head>
+        <title>Site: {{ Section }} - {{ Title }}</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link href="{{ SyntaxCSS }}" rel="stylesheet" type="text/css">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <style>
+        body{font-family: Lucida Sans Unicode, Lucida Grande, sans-serif; margin: 0px; background: #DDD;}
+        .post{margin-bottom: 20px; padding-left: 2em; padding-right: 2em;}
+        .section{background: #999; padding-left: 1em;}
+        .metadata{background: #EEE;}
+        </style>
+    </head>
+    <body>
+        {% if not Index_page %}
 
-<link href="{{ SyntaxCSS }}" rel="stylesheet" type="text/css">
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <div class="section">
+            <h1>Section name: {{ Section }}</h1>
+            <i>This is page name: {{ Page }}</i>
+        </div>
 
-{% if not Index_page %}
+        <div class="post">
+            &nbsp;
+            <h2>Title: {{ Title }}</h2>
+            <hr>
+            {{ Contents }}
+            <hr>
+            <div class="metadata">
+                <ul>
+                    <li>
+                        <b>Date:</b> {{ Date }}
+                    </li>
+                    <li>
+                        <b>Author:</b> {{ Author }}
+                    </li>
+                    <li>
+                        <b>Tags:</b> {{ Tags }}
+                    </li>
+                    <li>
+                        <b>ID:</b> {{ ID }}
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-	<h1>{{ Section }}</h1>
-	page: {{ Page }}
+        {% endif %}
 
-	<h2>{{ Title }}</h2>
-	{{ Contents }}
-	Date: {{ Date }}, author: {{ Author }}, tags: {{ Tags }}, ID: {{ ID }}
+        {% if Index_page %}
 
-{% endif %}
+        <div class="section">
+            <h1>Section name: {{ Section }}</h1>
+        </div>
 
-{% if Index_page %}
+            {% for page in Dictionary|sort(True) %}
+            <div class="post">
+                <h2>
+                    {{ Dictionary[page].ID }}: <a href="{{ Dictionary[page].Slug }}">{{ Dictionary[page].Title }}</a>
+                </h2>
 
-	{% for page in Dictionary|sort(True) %}
-	<div class="post">
-    	{{ Dictionary[page].ID }}: <a href="{{ Dictionary[page].Slug }}">{{ Dictionary[page].Title }}</a>
+                    {{ Dictionary[page].Contents }}
 
-    		{{ Dictionary[page].Contents }}
+                Written by {{ Dictionary[page].Author }} on {{ Dictionary[page].Date }}, tags: {{ Dictionary[page].Tags }}
+            </div>
 
-    	Written by {{ Dictionary[page].Author }} on {{ Dictionary[page].Date }}, tags: {{ Dictionary[page].Tags }}
-    </div>
-    {% endfor %}
+            <hr>
+            {% endfor %}
 
-    {% if previous_page_url %}
-    <br><br><a href="{{ previous_page_url }}">PREVIOUS</a>
-    {% endif %}
-    {% if next_page_url %}
-    <br><br><a href="{{ next_page_url }}">NEXT PAGE</a>
-    {% endif %}
+            {% if previous_page_url %}
+            <br><br><a href="{{ previous_page_url }}">PREVIOUS</a>
+            {% endif %}
+            {% if next_page_url %}
+            <br><br><a href="{{ next_page_url }}">NEXT PAGE</a>
+            {% endif %}
 
-{% endif %}
+            <div class="section">
+            <h1>Section name: {{ Section }}</h1>
+        </div>
+
+        {% endif %}
+
+    </body>
+</html>
