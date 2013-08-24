@@ -232,12 +232,22 @@ class Manager:
         shutil.rmtree(output_directory)
 
     def delete_section(self, section):
+        output_directory = Settings().get_output_directory()
         shutil.rmtree('input/' + section)
+        try:
+            shutil.rmtree(output_directory+'/'+section)
+        except(OSError):
+            pass
 
     def delete_page(self, section, page):
+        output_directory = Settings().get_output_directory()
         os.remove('input/' + section + '/' + page + '.md')
         try:
             os.remove('input/' + section + '/' + page + '.md.md5')
+        except(OSError):
+            pass
+        try:
+            shutil.rmtree(output_directory+'/'+section+'/'+page)
         except(OSError):
             pass
 
