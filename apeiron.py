@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, session, redirect, url_for, escape, request, send_from_directory
 import generator as Generator
-import json, sys
+import json, sys, os
 
 app = Flask(__name__)
 
@@ -316,6 +316,10 @@ app.secret_key = settings.get_secret_key()
 
 if __name__ == "__main__":
     port = 5000
+    if 'update' in sys.argv:
+        os.system("git pull")
+        exit()
+
     if 'port' in sys.argv:
         try:
             port = int(sys.argv[ [i for i,x in enumerate(sys.argv) if x == 'port'][0] + 1 ])
