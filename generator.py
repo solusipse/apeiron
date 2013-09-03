@@ -177,7 +177,7 @@ class Syntax(HTMLParser.HTMLParser):
 
     def highlight(self, html):
         self.tag_stack = []
-        self.inputhtml = html.replace('&', 'ampersand___').replace(';', '')
+        self.inputhtml = self.escape(html)
         self.feed(self.inputhtml)
         return self.inputhtml
 
@@ -187,15 +187,28 @@ class Syntax(HTMLParser.HTMLParser):
     def handle_endtag(self, tag):
         self.tag_stack.pop()
 
+    def escape(self, esc_input):
+        esc_input = esc_input.replace('&lt;','apeiron_lt___')
+        esc_input = esc_input.replace('&gt;','apeiron_gt___')
+        esc_input = esc_input.replace('&amp;', 'apeiron_ampersand___')
+        return esc_input
+
+    def unescape(self, esc_input):
+        esc_input = esc_input.replace('apeiron_lt___', '&lt;')
+        esc_input = esc_input.replace('apeiron_gt___', '&gt;')
+        esc_input = esc_input.replace('apeiron_ampersand___', '&amp;')
+        return esc_input
+
     def handle_data(self, data):
         if len(self.tag_stack) and self.tag_stack[-1] == 'code':
             try:
                 lexer = get_lexer_by_name(data.splitlines()[0], stripall=True)
                 formatter = HtmlFormatter(linenos=True, cssclass="highlight")
                 output_html = highlight(data.replace(data.splitlines()[0], '', 1), lexer, formatter)
-                self.inputhtml = self.inputhtml.replace(data, output_html).replace('ampersand___', '&')
+                self.inputhtml = self.inputhtml.replace(data, self.unescape(output_html))
             except:
-                self.inputhtml = self.inputhtml.replace('ampersand___', '&')
+                self.inputhtml = self.unescape(self.inputhtml)
+                print 'kurwa'
 
 
 class Manager:
@@ -539,6 +552,9 @@ class Generator:
             i += per_page
 
         return feedback
+
+    def generate_tags(self):
+        pass
 
     def generate_syntax_css(self):
         css_code = HtmlFormatter().get_style_defs('.highlight')
