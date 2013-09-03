@@ -552,9 +552,6 @@ class Generator:
 
         return feedback
 
-    def generate_tags(self):
-        pass
-
     def generate_syntax_css(self):
         css_code = HtmlFormatter().get_style_defs('.highlight')
         output_directory = Settings().get_output_directory()
