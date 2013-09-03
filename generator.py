@@ -208,7 +208,6 @@ class Syntax(HTMLParser.HTMLParser):
                 self.inputhtml = self.inputhtml.replace(data, self.unescape(output_html))
             except:
                 self.inputhtml = self.unescape(self.inputhtml)
-                print 'kurwa'
 
 
 class Manager:
